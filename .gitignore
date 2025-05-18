@@ -1,0 +1,22 @@
+# Python virtual environment
+venv/
+Lib/
+Include/
+Scripts/
+pyvenv.cfg
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Temporary files
+temp_audio.wav
+transcript_summary.txt
+
+# Large media files
+*.mp4
+*.wav
+*.mp3
+
+# Environment
+.env
