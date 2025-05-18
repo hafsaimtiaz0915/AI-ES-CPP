@@ -8,6 +8,8 @@ This Python-based solution enables **automatic transcription** and **summarizati
 
 Full project report: [Google Docs Link](https://docs.google.com/document/d/1uH4otyxasE608TnfxS0YuzU77NniHZed5bbi-1HAeok/edit?usp=sharing)
 
+Video Explanation + demo: [Youtube Link](https://youtu.be/VwW_Afq_0Yg)
+
 ## ✨ Youtube Link
 
 ## ✨ Key Features
