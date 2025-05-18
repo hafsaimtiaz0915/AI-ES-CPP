@@ -4,6 +4,9 @@
 This Python-based solution enables **automatic transcription** and **summarization of video content** using state-of-the-art machine learning models. Leveraging **OpenAI's Whisper** for speech-to-text conversion and **Hugging Face's BART-large-CNN** for text summarization, the script seamlessly converts video files into insightful text summaries.
 
 ---
+## ✨ Project Report
+
+Full project report: [Google Docs Link](https://docs.google.com/document/d/1uH4otyxasE608TnfxS0YuzU77NniHZed5bbi-1HAeok/edit?usp=sharing)
 
 ## ✨ Key Features
 
