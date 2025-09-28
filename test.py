@@ -7,6 +7,21 @@ from transformers import pipeline
 import numpy as np
 from datetime import timedelta
 
+# Structured NLP imports
+try:
+    import spacy
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    import networkx as nx
+    from gensim import corpora, models
+    from collections import Counter
+    import re
+    STRUCTURED_NLP_AVAILABLE = True
+except ImportError as e:
+    print(f"[!] Structured NLP libraries not available: {e}")
+    print("[*] Install with: pip install spacy scikit-learn networkx gensim")
+    STRUCTURED_NLP_AVAILABLE = False
+
 # Ensure output encoding is UTF-8 (fix for Windows emoji/Unicode errors)
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -44,6 +59,113 @@ def transcribe_chunk(model, audio_path, start_time):
     )
     timestamp = str(timedelta(seconds=int(start_time)))
     return f"[{timestamp}] {result['text']}\n"
+
+# ===== STRUCTURED NLP FUNCTIONS =====
+
+def extract_entities(text):
+    """Extract named entities using spaCy"""
+    if not STRUCTURED_NLP_AVAILABLE:
+        return [("NLP libraries not available", "ERROR")]
+    
+    try:
+        # Try to load English model
+        nlp = spacy.load("en_core_web_sm")
+    except OSError:
+        print("[!] spaCy English model not found. Install with: python -m spacy download en_core_web_sm")
+        return [("spaCy model not available", "ERROR")]
+    
+    doc = nlp(text)
+    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    return entities[:20]  # Return top 20 entities
+
+def textrank_summarization(text, num_sentences=3):
+    """Extractive summarization using TextRank algorithm"""
+    if not STRUCTURED_NLP_AVAILABLE:
+        return "TextRank not available - missing dependencies"
+    
+    # Split text into sentences
+    sentences = [s.strip() for s in text.split('.') if s.strip() and len(s.strip()) > 20]
+    
+    if len(sentences) < num_sentences:
+        return '. '.join(sentences)
+    
+    try:
+        # Create TF-IDF vectors
+        vectorizer = TfidfVectorizer(stop_words='english')
+        tfidf_matrix = vectorizer.fit_transform(sentences)
+        
+        # Calculate similarity matrix
+        similarity_matrix = cosine_similarity(tfidf_matrix)
+        
+        # Create graph and apply PageRank
+        nx_graph = nx.from_numpy_array(similarity_matrix)
+        scores = nx.pagerank(nx_graph)
+        
+        # Get top sentences
+        ranked_sentences = sorted(((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
+        return '. '.join([s for _, s in ranked_sentences[:num_sentences]]) + '.'
+    except Exception as e:
+        print(f"[!] TextRank error: {e}")
+        return "TextRank summarization failed"
+
+def lda_topic_modeling(text, num_topics=3):
+    """Topic modeling using Latent Dirichlet Allocation"""
+    if not STRUCTURED_NLP_AVAILABLE:
+        return [(0, "LDA not available - missing dependencies")]
+    
+    try:
+        # Preprocess text
+        sentences = [s.strip() for s in text.split('.') if s.strip()]
+        texts = []
+        
+        for sentence in sentences:
+            # Simple tokenization and cleaning
+            words = re.findall(r'\b[a-zA-Z]{3,}\b', sentence.lower())
+            if len(words) > 2:
+                texts.append(words)
+        
+        if len(texts) < 3:
+            return [(0, "Insufficient text for topic modeling")]
+        
+        # Create dictionary and corpus
+        dictionary = corpora.Dictionary(texts)
+        corpus = [dictionary.doc2bow(text) for text in texts]
+        
+        # Train LDA model
+        lda_model = models.LdaModel(
+            corpus=corpus, 
+            id2word=dictionary, 
+            num_topics=min(num_topics, len(texts)), 
+            random_state=42,
+            passes=10,
+            alpha='auto',
+            per_word_topics=True
+        )
+        
+        topics = lda_model.print_topics(num_words=5)
+        return topics
+    except Exception as e:
+        print(f"[!] LDA error: {e}")
+        return [(0, "Topic modeling failed")]
+
+def structured_summarization_pipeline(text):
+    """Complete structured NLP pipeline"""
+    print("[*] Running structured NLP analysis...")
+    
+    # Extract entities
+    entities = extract_entities(text)
+    
+    # Generate extractive summary
+    extractive_summary = textrank_summarization(text, num_sentences=5)
+    
+    # Topic modeling
+    topics = lda_topic_modeling(text)
+    
+    return {
+        'extractive_summary': extractive_summary,
+        'entities': entities,
+        'topics': topics
+    }
 
 def process_video_in_chunks(video_path, chunk_duration=300):  # 5 minutes chunks
     print("[*] Starting video processing...")
@@ -91,11 +213,18 @@ def process_video_in_chunks(video_path, chunk_duration=300):  # 5 minutes chunks
         start_time += chunk_duration
         print(f"[*] Progress: {min(100, (start_time/total_duration)*100):.1f}%")
     
-    # Summarize the full transcript
-    print("\n[*] Generating summary...")
-    summary = summarize_text(full_transcript)
+    # Generate summaries using both approaches
+    print("\n[*] Generating summaries...")
     
-    return full_transcript, summary
+    # Unstructured (existing) summary
+    print("[*] Generating abstractive summary (BART)...")
+    abstractive_summary = summarize_text(full_transcript)
+    
+    # Structured analysis
+    print("[*] Running structured NLP pipeline...")
+    structured_analysis = structured_summarization_pipeline(full_transcript)
+    
+    return full_transcript, abstractive_summary, structured_analysis
 
 def summarize_text(text, max_words=800):
     print("[*] Summarizing transcript with Transformers...")
@@ -114,18 +243,42 @@ def summarize_text(text, max_words=800):
         summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
         return summary[0]['summary_text']
 
-def save_output(transcript, summary, filename="transcript_summary.txt"):
+def save_output(transcript, abstractive_summary, structured_analysis, filename="transcript_summary.txt"):
     with open(filename, "w", encoding="utf-8") as f:
-        f.write("TRANSCRIPT:\n\n" + transcript + "\n\nSUMMARY:\n\n" + summary)
-    print(f"[*] Transcript and summary saved to: {filename}")
+        f.write("=== FULL TRANSCRIPT (with timestamps) ===\n\n")
+        f.write(transcript + "\n\n")
+        
+        f.write("=== ABSTRACTIVE SUMMARY (BART) ===\n\n")
+        f.write(abstractive_summary + "\n\n")
+        
+        f.write("=== EXTRACTIVE SUMMARY (TextRank) ===\n\n")
+        f.write(structured_analysis['extractive_summary'] + "\n\n")
+        
+        f.write("=== NAMED ENTITIES ===\n\n")
+        for entity, label in structured_analysis['entities']:
+            f.write(f"{entity} ({label})\n")
+        
+        f.write("\n=== TOPICS (LDA) ===\n\n")
+        for i, topic in enumerate(structured_analysis['topics']):
+            f.write(f"Topic {i+1}: {topic[1]}\n")
+            
+    print(f"[✓] Complete analysis saved to: {filename}")
 
 def summarize_meeting(video_path):
-    transcript, summary = process_video_in_chunks(video_path)
-    if transcript and summary:
-        save_output(transcript, summary)
-        print("[✓] Done.")
+    result = process_video_in_chunks(video_path)
+    if result and len(result) == 3:
+        transcript, abstractive_summary, structured_analysis = result
+        if transcript and abstractive_summary:
+            save_output(transcript, abstractive_summary, structured_analysis)
+            print("[✓] Video processing complete!")
+            print(f"[*] Abstractive summary: {len(abstractive_summary.split())} words")
+            print(f"[*] Extractive summary: {len(structured_analysis['extractive_summary'].split())} words")
+            print(f"[*] Entities found: {len(structured_analysis['entities'])}")
+            print(f"[*] Topics identified: {len(structured_analysis['topics'])}")
+        else:
+            print("[!] Processing failed.")
     else:
-        print("[!] Processing failed.")
+        print("[!] Processing failed - invalid result format.")
 
 # Replace this with your actual video file name
 if __name__ == "__main__":

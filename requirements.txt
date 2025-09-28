@@ -1,5 +1,30 @@
+# Core video processing and ML libraries
 ffmpeg-python
 openai-whisper
 transformers
 torch
 tqdm
+
+# Structured NLP libraries
+spacy
+scikit-learn
+networkx
+gensim
+nltk
+
+# Evaluation metrics
+rouge-score
+sacrebleu
+datasets
+
+# Enhanced functionality
+sentence-transformers
+ttkthemes
+pillow
+
+# System monitoring
+psutil
+
+# Data processing
+pandas
+numpy

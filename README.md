@@ -1,7 +1,30 @@
 
-# 🎥 Video Transcription and Summarization Tool
+# 🎥 Comparat## ✨ Key Features
 
-This Python-based solution enables **automatic transcription** and **summarization of video content** using state-of-the-art machine learning models. Leveraging **OpenAI's Whisper** for speech-to-text conversion and **Hugging Face's BART-large-CNN** for text summarization, the script seamlessly converts video files into insightful text summaries.
+### Core Functionality
+* 🔊 **Audio Extraction**: Extracts audio directly from `.mp4` video files using **FFmpeg**
+* 📝 **Accurate Transcription**: Utilizes **OpenAI's Whisper** for multilingual, high-accuracy speech recognition
+* 📄 **Dual Summarization**: 
+  - **Abstractive** summaries using **BART-large-CNN** transformer model
+  - **Extractive** summaries using **TextRank** and **TF-IDF** algorithms
+
+### Advanced NLP Features
+* 🤖 **Question-Answering System**: Both structured (keyword-based) and unstructured (transformer-based) approaches
+* 🏷️ **Named Entity Recognition**: Identifies and categorizes entities using **spaCy**
+* 📊 **Topic Modeling**: Discovers themes using **Latent Dirichlet Allocation (LDA)**
+* 🔍 **Comparative Analysis**: Side-by-side evaluation of structured vs unstructured methods
+
+### Evaluation & Benchmarking
+* 📈 **Performance Metrics**: ROUGE, BLEU scores, processing time, memory usage
+* 🗃️ **Dataset Integration**: Support for CNN/DailyMail, SQuAD, SAMSum, and custom datasets
+* 📋 **Comprehensive Reporting**: Automated evaluation reports with detailed comparisons
+
+### User Interface
+* 🖥️ **Enhanced GUI**: Multi-tab interface with comparison views and Q&A functionality
+* 💻 **Command Line**: Automated batch processing with method selection
+* 💾 **Smart Export**: Saves complete analysis including all method resultsudy of Structured and Unstructured NLP Models
+
+This comprehensive Python-based solution enables **automatic transcription**, **summarization**, and **question-answering** for video content using both structured and unstructured NLP approaches. The system provides a comparative framework to evaluate traditional methods (TF-IDF, TextRank, LDA) against modern transformer-based models (Whisper, BART, T5, DistilBERT).
 
 ---
 ## ✨ Project Report
@@ -26,13 +49,34 @@ Video Explanation + demo: [Youtube Link](https://youtu.be/VwW_Afq_0Yg)
 
 Ensure the following tools and libraries are installed in your environment:
 
-* Python ≥ 3.7
+### System Requirements
+* Python ≥ 3.7 (Python 3.8+ recommended)
 * [FFmpeg](https://ffmpeg.org/download.html) (must be accessible via system PATH)
-* Python Libraries:
+* Minimum 8GB RAM (16GB recommended for large models)
+* GPU support optional but recommended for faster processing
 
-  * `openai-whisper`
-  * `transformers`
-  * `ffmpeg-python`
+### Core Libraries
+* `openai-whisper` - Speech-to-text transcription
+* `transformers` - Modern NLP models (BART, T5, DistilBERT)
+* `torch` - PyTorch backend for neural networks
+* `ffmpeg-python` - Audio/video processing
+
+### Structured NLP Libraries
+* `spacy` - Named Entity Recognition and text processing
+* `scikit-learn` - TF-IDF vectorization and traditional ML
+* `networkx` - Graph algorithms for TextRank
+* `gensim` - Topic modeling with LDA
+
+### Evaluation & Analysis
+* `rouge-score` - ROUGE metrics for summarization evaluation
+* `sacrebleu` - BLEU scores for text comparison
+* `datasets` - Benchmark dataset loading (CNN/DailyMail, SQuAD, etc.)
+* `psutil` - System performance monitoring
+
+### GUI & Utilities
+* `ttkthemes` - Enhanced GUI styling
+* `pandas`, `numpy` - Data processing and analysis
+* `pillow` - Image processing for GUI
 
 ---
 
@@ -69,40 +113,94 @@ or
 
 ### 3. Install Dependencies
 
-```bash
-pip install ffmpeg-python openai-whisper transformers
-```
-
-Alternatively, use the requirements file:
+Install all required packages:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Install spaCy English model:
+
+```bash
+python -m spacy download en_core_web_sm
+```
+
+### 4. Verify Installation
+
+Test your setup with the comprehensive demo:
+
+```bash
+python demo.py
 ```
 
 ---
 
 ## ▶️ How to Use
 
-1. **Place your `.mp4` video file** in the project directory.
+### 🖥️ Graphical Interface (Recommended)
 
-2. **Activate your virtual environment** (if not already activated):
+1. **Launch the enhanced GUI application**:
 
-```powershell
-cd "C:\Users\YourName\Desktop\whisper-env"
-.\Scripts\Activate.ps1
+```bash
+python app.py
 ```
 
-3. **Run the script**:
+2. **Use the comprehensive interface**:
+   - **Transcription Tab**: Process video files with real-time progress
+   - **Summary Tabs**: View both abstractive (BART) and extractive (TextRank) summaries
+   - **Method Comparison**: Side-by-side analysis of structured vs unstructured approaches
+   - **Q&A System**: Ask questions about transcribed content using both methods
+   - **Evaluation**: Performance metrics and comparative analysis
+
+### 💻 Command Line Interface
+
+1. **Quick processing with default settings**:
 
 ```bash
 python test.py
 ```
 
-> 🔁 You can also edit the video file name in `test.py`:
->
-> ```python
-> video_path = "your_video_file.mp4"
-> ```
+2. **Comprehensive demonstration**:
+
+```bash
+python demo.py
+```
+
+3. **Custom video file**:
+
+```python
+# Edit video_path in test.py
+video_path = "your_video_file.mp4"
+```
+
+### � Advanced Features
+
+**Question-Answering System**:
+```python
+from qa_system import QuestionAnsweringSystem
+
+qa = QuestionAnsweringSystem()
+qa.set_context("Your transcript text here...")
+result = qa.answer_question("What was discussed?", method="both")
+```
+
+**Comparative Evaluation**:
+```python
+from evaluation_metrics import EvaluationMetrics
+
+evaluator = EvaluationMetrics()
+results = evaluator.comparative_evaluation(text, structured_func, unstructured_func)
+evaluator.generate_evaluation_report(results, "report.txt")
+```
+
+**Dataset Integration**:
+```python
+from dataset_handler import DatasetHandler
+
+handler = DatasetHandler()
+handler.load_benchmark_datasets(sample_size=50)
+samples = handler.get_evaluation_samples("cnn_dailymail", num_samples=10)
+```
 
 ---
 
