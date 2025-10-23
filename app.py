@@ -47,43 +47,13 @@ class AudioTranscriptionApp:
             "background": "#ffffff",   # White background
             "input_bg": "#f8f9fa"      # Light gray for input backgrounds
         }
-          # Main container for content
+          # Main container for content - SIMPLIFIED (no canvas scrolling for performance)
         main_container = ttk.Frame(root)
         main_container.pack(fill=tk.BOTH, expand=True)
         
-        # Create canvas with scrollbar for entire content
-        self.canvas = tk.Canvas(main_container, bg=self.colors["background"])
-        self.scrollbar = AutoScrollbar(main_container, orient="vertical", command=self.canvas.yview)
-        
-        # Create the main scrollable frame
-        self.scrollable_frame = ttk.Frame(self.canvas)
-        
-        # Configure scrolling
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        )
-        
-        # Make the frame expand to fill canvas width
-        self.canvas.bind('<Configure>', self._configure_canvas)
-        
-        # Create a window inside the canvas to hold the scrollable frame
-        self.canvas_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        
-        # Grid layout for canvas and scrollbar
-        self.canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns")
-        
-        # Configure grid weights
-        main_container.grid_columnconfigure(0, weight=1)
-        main_container.grid_rowconfigure(0, weight=1)        # Configure grid weights
-        self.scrollable_frame.grid_rowconfigure(0, weight=1)
-        self.scrollable_frame.grid_columnconfigure(0, weight=1)
-        
-        # Pack canvas and scrollbar
-        self.canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns")
+        # Direct frame approach - no canvas for better performance
+        self.scrollable_frame = ttk.Frame(main_container)
+        self.scrollable_frame.pack(fill=tk.BOTH, expand=True)
 
         # Apply modern theme and styling
         style = ttk.Style()
@@ -124,31 +94,36 @@ class AudioTranscriptionApp:
                       background=self.colors["primary"],
                       thickness=8)
 
-        # Frame for the hero section (now inside scrollable_frame)
-        hero_frame = ttk.Frame(self.scrollable_frame, padding="20", style="TFrame")
+        # Simplified hero section - reduced padding for performance
+        hero_frame = ttk.Frame(self.scrollable_frame, padding="10", style="TFrame")
         hero_frame.pack(fill=tk.X)
         
         # App title in hero section
         ttk.Label(hero_frame, 
                 text="Audio Transcription Tool", 
-                style="Title.TLabel").pack(pady=(10, 5))
+                style="Title.TLabel").pack(pady=(5, 2))
         
         ttk.Label(hero_frame, 
                 text="Convert speech to text, summarize content, and save your results with confidence.", 
-                style="Subtitle.TLabel").pack(pady=(0, 20))
+                style="Subtitle.TLabel").pack(pady=(0, 10))
 
         # Queue for thread communication
         self.queue = queue.Queue()
-          # Create main content area with improved layout
-        main_content = ttk.Frame(self.scrollable_frame, padding="20", style="TFrame")
+        
+        # Performance optimization: reduce UI update frequency
+        self._pending_updates = {}
+        self._update_scheduled = False
+        
+        # Create main content area with reduced padding
+        main_content = ttk.Frame(self.scrollable_frame, padding="10", style="TFrame")
         main_content.pack(fill=tk.BOTH, expand=True)
         main_content.columnconfigure(1, weight=3)
         main_content.columnconfigure(0, weight=1)
         main_content.rowconfigure(0, weight=1)
         
-        # Left panel for controls with rounded corners and shadow effect
-        left_panel = ttk.Frame(main_content, padding="20", style="TFrame")
-        left_panel.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 20))
+        # Left panel for controls - reduced padding
+        left_panel = ttk.Frame(main_content, padding="10", style="TFrame")
+        left_panel.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
         
         # File selection with improved UI
         file_section = ttk.Frame(left_panel, style="TFrame")
@@ -344,7 +319,10 @@ class AudioTranscriptionApp:
                                       borderwidth=1,
                                       relief="solid",
                                       padx=10,
-                                      pady=10)
+                                      pady=10,
+                                      autoseparators=True,
+                                      undo=False,
+                                      maxundo=0)
         self.output_text.pack(expand=True, fill='both')
         
         # Summary tab with both approaches
@@ -367,7 +345,9 @@ class AudioTranscriptionApp:
                                        borderwidth=1,
                                        relief="solid",
                                        padx=10,
-                                       pady=10)
+                                       pady=10,
+                                       undo=False,
+                                       maxundo=0)
         self.summary_text.pack(expand=True, fill='both')
         
         # Extractive summary (TextRank) - only if advanced features available
@@ -418,8 +398,9 @@ class AudioTranscriptionApp:
             self.add_evaluation_tab(notebook)
         
         # Start queue processing
-        self.process_queue()        # Bind mousewheel scrolling
-        self._bind_mousewheel(self.scrollable_frame)
+        self.process_queue()
+        
+        # Bind mousewheel scrolling only to canvas (more efficient)
         self.canvas.bind('<Enter>', lambda e: self.canvas.bind_all('<MouseWheel>', self._on_mousewheel))
         self.canvas.bind('<Leave>', lambda e: self.canvas.unbind_all('<MouseWheel>'))
         
@@ -655,20 +636,25 @@ class AudioTranscriptionApp:
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to save report: {e}")
 
-    def _configure_canvas(self, event):
+    def _throttled_scroll_update(self, event):
+        """Throttled scroll region update to reduce lag"""
+        if self._scroll_update_id:
+            self.root.after_cancel(self._scroll_update_id)
+        self._scroll_update_id = self.root.after(100, lambda: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+    
+    def _throttled_canvas_config(self, event):
+        """Throttled canvas configuration to reduce lag"""
+        if self._canvas_config_id:
+            self.root.after_cancel(self._canvas_config_id)
+        self._canvas_config_id = self.root.after(50, lambda: self._configure_canvas(event.width))
+    
+    def _configure_canvas(self, canvas_width):
         """Configure the canvas to expand content to full width"""
-        canvas_width = event.width
         self.canvas.itemconfig(self.canvas_window, width=canvas_width)
         
     def _on_mousewheel(self, event):
         """Handle mouse wheel scrolling"""
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-        
-    def _bind_mousewheel(self, widget):
-        """Bind mousewheel to a widget and all its children"""
-        widget.bind('<MouseWheel>', self._on_mousewheel)
-        for child in widget.winfo_children():
-            self._bind_mousewheel(child)
 
     def get_video_duration(self, video_path):
         """Get the duration of the video using ffmpeg"""
@@ -739,9 +725,8 @@ class AudioTranscriptionApp:
                         timestamp = str(timedelta(seconds=int(start_time)))
                         chunk_text = f"[{timestamp}] {result['text']}\n\n"
                         
-                        # Update transcription immediately
-                        self.output_text.insert(tk.END, chunk_text)
-                        self.output_text.see(tk.END)
+                        # Update transcription via queue (non-blocking)
+                        self.update_ui(output=chunk_text)
                         full_transcript += chunk_text
                         
                         # Clean up temp file
@@ -774,8 +759,8 @@ class AudioTranscriptionApp:
                     )
                 
                 final_summary = " ".join(summary_texts)
-                self.summary_text.delete(1.0, tk.END)
-                self.summary_text.insert(tk.END, final_summary)
+                # Use after_idle to defer UI update and prevent blocking
+                self.root.after_idle(lambda: self._update_summary_text(final_summary))
                 
                 # Extractive summary (new) - if advanced features available
                 if ADVANCED_FEATURES_AVAILABLE and self.extractive_summary_text and not self.cancelled:
@@ -784,8 +769,8 @@ class AudioTranscriptionApp:
                         structured_analysis = structured_summarization_pipeline(full_transcript)
                         extractive_summary = structured_analysis.get('extractive_summary', 'No extractive summary available')
                         
-                        self.extractive_summary_text.delete(1.0, tk.END)
-                        self.extractive_summary_text.insert(tk.END, extractive_summary)
+                        # Use after_idle to defer UI update
+                        self.root.after_idle(lambda: self._update_extractive_text(extractive_summary))
                         
                         # Set context for QA system
                         if hasattr(self, 'qa_system'):
@@ -817,10 +802,17 @@ class AudioTranscriptionApp:
                         pass
 
     def process_queue(self):
-        """Process messages from the queue to update the UI"""
+        """Process messages from the queue to update the UI with batching"""
         try:
-            while True:
+            # Batch text output updates to reduce lag
+            text_updates = []
+            msg_count = 0
+            max_batch = 10  # Process max 10 messages per cycle
+            
+            while msg_count < max_batch:
                 msg = self.queue.get_nowait()
+                msg_count += 1
+                
                 if isinstance(msg, dict):
                     if 'progress' in msg:
                         self.progress_var.set(msg['progress'])
@@ -829,17 +821,33 @@ class AudioTranscriptionApp:
                     if 'step' in msg:
                         self.step_label.config(text=msg['step'])
                     if 'output' in msg:
-                        self.output_text.insert(tk.END, msg['output'])
-                        self.output_text.see(tk.END)
+                        text_updates.append(msg['output'])
+            
+            # Batch all text updates into single insert operation
+            if text_updates:
+                self.output_text.insert(tk.END, ''.join(text_updates))
+                self.output_text.see(tk.END)
+                
         except queue.Empty:
             pass
         finally:
-            # Schedule the next queue check
-            self.root.after(100, self.process_queue)
+            # Reduce polling frequency to 150ms to lower CPU usage
+            self.root.after(150, self.process_queue)
 
     def update_ui(self, **kwargs):
         """Send updates to the UI thread"""
         self.queue.put(kwargs)
+    
+    def _update_summary_text(self, text):
+        """Helper to update summary text widget"""
+        self.summary_text.delete(1.0, tk.END)
+        self.summary_text.insert(1.0, text)
+    
+    def _update_extractive_text(self, text):
+        """Helper to update extractive summary text widget"""
+        if self.extractive_summary_text:
+            self.extractive_summary_text.delete(1.0, tk.END)
+            self.extractive_summary_text.insert(1.0, text)
 
     def start_processing(self):
         if not self.file_path.get():

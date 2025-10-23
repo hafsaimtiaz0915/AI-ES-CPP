@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Audio Transcription & Analysis Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f5576c;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f7fafc;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(245, 87, 108, 0.08) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 8s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            font-size: 1.15em;
+            opacity: 0.95;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 0;
+            min-height: 700px;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 35px;
+            border-right: 1px solid var(--border-color);
+            box-shadow: inset -1px 0 0 rgba(255,255,255,0.5);
+        }
+
+        .main-content {
+            padding: 35px;
+            background: white;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .section-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: white;
+            border: 2px dashed var(--primary-color);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-input-label::before {
+            content: '📁';
+            font-size: 3em;
+            margin-bottom: 12px;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .file-input-label:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .file-input-label:hover::before {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .file-label-text {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.05em;
+            margin-bottom: 6px;
+        }
+
+        .file-label-hint {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .file-name {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: var(--text-dark);
+            font-weight: 500;
+            word-break: break-all;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .setting-group {
+            margin-bottom: 24px;
+        }
+
+        .setting-label {
+            display: block;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.95em;
+            letter-spacing: -0.2px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .radio-option:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .radio-option:has(input:checked) {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .radio-text {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .radio-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer-progress 2s infinite;
+        }
+
+        @keyframes shimmer-progress {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-percent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75em;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            color: var(--text-light);
+            text-align: center;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-danger {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            background: #f8fafc;
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 0.95em;
+            color: var(--text-light);
+            transition: var(--transition);
+            border-radius: 10px;
+            font-weight: 500;
+            position: relative;
+            letter-spacing: -0.2px;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .output-box {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            min-height: 450px;
+            max-height: 650px;
+            overflow-y: auto;
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: var(--text-dark);
+            white-space: pre-wrap;
+            font-family: 'Inter', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            position: relative;
+        }
+
+        .output-box:empty::before {
+            content: attr(data-placeholder);
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .output-box::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .output-box::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 4px 0;
+        }
+
+        .output-box::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .output-box::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gradient);
+        }
+
+        .qa-section {
+            margin-bottom: 20px;
+        }
+
+        .qa-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .qa-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .qa-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-small {
+            padding: 12px 25px;
+            font-size: 0.9em;
+        }
+
+        .entity-list, .topic-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .entity-tag, .topic-tag {
+            padding: 8px 15px;
+            background: #e0e8ff;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: var(--primary-color);
+        }
+
+        .status-complete {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+            color: #11998e;
+        }
+
+        .status-error {
+            background: linear-gradient(135deg, rgba(245, 87, 108, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            color: var(--accent-color);
+        }
+
+        .spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: var(--dark-gradient);
+            color: white;
+            border-radius: 8px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            margin-bottom: 5px;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .content {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                font-size: 0.85em;
+                padding: 10px 16px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Professional scrollbar for body */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 6px;
+            border: 2px solid #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🎙️ AI Audio Transcription Platform</h1>
+                <p class="subtitle">Professional speech-to-text conversion with advanced AI analysis</p>
+                <span class="badge">✨ Powered by OpenAI Whisper & BART</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="sidebar">
+                <div class="section-card">
+                    <div class="section-title">Upload Media File</div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" accept=".mp3,.mp4,.wav,.m4a,.wma,.avi,.mkv">
+                        <label for="fileInput" class="file-input-label">
+                            <span class="file-label-text">Select Your File</span>
+                            <span class="file-label-hint">Drop your audio or video file here</span>
+                        </label>
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Configuration</div>
+                    
+                    <div class="setting-group">
+                        <label class="setting-label">Model Quality</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="model" value="base" checked>
+                                <div class="radio-text">
+                                    <span>Fast Mode</span>
+                                    <span class="radio-badge">QUICK</span>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="model" value="small">
+                                <div class="radio-text">
+                                    <span>Balanced Mode</span>
+                                    <span class="radio-badge">RECOMMENDED</span>
+                                </div>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="model" value="medium">
+                                <div class="radio-text">
+                                    <span>Precision Mode</span>
+                                    <span class="radio-badge">ACCURATE</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="setting-label">Processing Chunk Size</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="chunk" value="30" checked>
+                                <span>30 seconds</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="chunk" value="60">
+                                <span>1 minute</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="chunk" value="120">
+                                <span>2 minutes</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="section-title">Processing Status</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+                    <div class="progress-text" id="progressText">Ready to start processing</div>
+                </div>
+
+                <button class="btn btn-primary" id="startBtn">🚀 Start Processing</button>
+                <button class="btn btn-danger hidden" id="cancelBtn">⏹️ Stop Processing</button>
+                <button class="btn btn-secondary" id="clearBtn">🗑️ Clear All Results</button>
+            </div>
+
+            <div class="main-content">
+                <div class="tabs">
+                    <button class="tab active" data-tab="transcript">📝 Transcription</button>
+                    <button class="tab" data-tab="abstractive">🎯 AI Summary</button>
+                    <button class="tab" data-tab="extractive" {% if not advanced_features %}class="tab hidden"{% endif %}>📊 Key Insights</button>
+                    <button class="tab" data-tab="qa" {% if not advanced_features %}class="tab hidden"{% endif %}>💬 Q&A</button>
+                    <button class="tab" data-tab="analysis" {% if not advanced_features %}class="tab hidden"{% endif %}>🔍 Analysis</button>
+                </div>
+
+                <div class="tab-content active" id="transcript">
+                    <div class="output-box" id="transcriptBox" data-placeholder="Your transcription will appear here...">Your transcription will appear here...</div>
+                </div>
+
+                <div class="tab-content" id="abstractive">
+                    <div class="output-box" id="abstractiveBox" data-placeholder="AI-generated summary will appear here...">AI-generated summary will appear here...</div>
+                </div>
+
+                <div class="tab-content" id="extractive">
+                    <div class="output-box" id="extractiveBox" data-placeholder="Key insights will appear here...">Key insights will appear here...</div>
+                </div>
+
+                <div class="tab-content" id="qa">
+                    <div class="qa-section">
+                        <h3>Ask a Question</h3>
+                        <div class="qa-input-group">
+                            <input type="text" class="qa-input" id="qaQuestion" placeholder="Enter your question...">
+                            <button class="btn btn-primary btn-small" id="qaBtn">Ask</button>
+                        </div>
+                    </div>
+                    <div class="output-box" id="qaBox">Q&A results will appear here...</div>
+                </div>
+
+                <div class="tab-content" id="analysis">
+                    <h3>Entities Found</h3>
+                    <div class="entity-list" id="entityList"></div>
+                    
+                    <h3 style="margin-top: 30px;">Topics</h3>
+                    <div class="topic-list" id="topicList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTaskId = null;
+        let statusInterval = null;
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // File selection
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+        });
+
+        // Start button
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files[0]) {
+                alert('Please select a file first!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('model', document.querySelector('input[name="model"]:checked').value);
+            formData.append('chunk_size', document.querySelector('input[name="chunk"]:checked').value);
+
+            try {
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('cancelBtn').classList.remove('hidden');
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    currentTaskId = data.task_id;
+                    startStatusPolling();
+                } else {
+                    alert('Error: ' + data.error);
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('cancelBtn').classList.add('hidden');
+                }
+            } catch (error) {
+                alert('Error uploading file: ' + error);
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('cancelBtn').classList.add('hidden');
+            }
+        });
+
+        // Cancel button
+        document.getElementById('cancelBtn').addEventListener('click', async () => {
+            if (currentTaskId) {
+                await fetch(`/cancel/${currentTaskId}`, { method: 'POST' });
+                stopStatusPolling();
+                updateProgress(0, 'Cancelled');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('cancelBtn').classList.add('hidden');
+            }
+        });
+
+        // Clear button
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('transcriptBox').textContent = 'Transcript will appear here...';
+            document.getElementById('abstractiveBox').textContent = 'Abstractive summary will appear here...';
+            document.getElementById('extractiveBox').textContent = 'Extractive summary will appear here...';
+            document.getElementById('qaBox').textContent = 'Q&A results will appear here...';
+            document.getElementById('entityList').innerHTML = '';
+            document.getElementById('topicList').innerHTML = '';
+            updateProgress(0, 'Ready to start');
+        });
+
+        // Q&A button
+        document.getElementById('qaBtn').addEventListener('click', async () => {
+            const question = document.getElementById('qaQuestion').value;
+            if (!question || !currentTaskId) {
+                alert('Please enter a question and ensure processing is complete!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/qa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question, task_id: currentTaskId, method: 'both' })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    let resultText = `Question: ${question}\n\n`;
+                    
+                    if (data.structured) {
+                        resultText += `Structured Answer: ${data.structured.answer}\n`;
+                        resultText += `Confidence: ${data.structured.confidence}\n\n`;
+                    }
+                    
+                    if (data.unstructured) {
+                        resultText += `Unstructured Answer: ${data.unstructured.answer}\n`;
+                        resultText += `Confidence: ${data.unstructured.confidence}\n\n`;
+                    }
+                    
+                    if (data.comparison) {
+                        resultText += `Recommended: ${data.comparison.recommended_method}\n`;
+                    }
+                    
+                    document.getElementById('qaBox').textContent = resultText;
+                } else {
+                    document.getElementById('qaBox').textContent = 'Error: ' + data.error;
+                }
+            } catch (error) {
+                document.getElementById('qaBox').textContent = 'Error: ' + error;
+            }
+        });
+
+        function startStatusPolling() {
+            statusInterval = setInterval(async () => {
+                if (!currentTaskId) return;
+
+                try {
+                    const response = await fetch(`/status/${currentTaskId}`);
+                    const data = await response.json();
+
+                    updateProgress(data.progress, data.step);
+                    
+                    if (data.transcript) {
+                        document.getElementById('transcriptBox').textContent = data.transcript;
+                    }
+                    
+                    if (data.abstractive_summary) {
+                        document.getElementById('abstractiveBox').textContent = data.abstractive_summary;
+                    }
+                    
+                    if (data.extractive_summary) {
+                        document.getElementById('extractiveBox').textContent = data.extractive_summary;
+                    }
+                    
+                    if (data.entities && data.entities.length > 0) {
+                        document.getElementById('entityList').innerHTML = data.entities
+                            .map(([entity, label]) => `<span class="entity-tag">${entity} (${label})</span>`)
+                            .join('');
+                    }
+                    
+                    if (data.topics && data.topics.length > 0) {
+                        document.getElementById('topicList').innerHTML = data.topics
+                            .map((topic, i) => `<span class="topic-tag">Topic ${i+1}: ${topic[1]}</span>`)
+                            .join('');
+                    }
+
+                    if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
+                        stopStatusPolling();
+                        document.getElementById('startBtn').disabled = false;
+                        document.getElementById('cancelBtn').classList.add('hidden');
+                        
+                        if (data.error) {
+                            alert('Error: ' + data.error);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Status polling error:', error);
+                }
+            }, 1000); // Poll every second
+        }
+
+        function stopStatusPolling() {
+            if (statusInterval) {
+                clearInterval(statusInterval);
+                statusInterval = null;
+            }
+        }
+
+        function updateProgress(percent, text) {
+            const fillEl = document.getElementById('progressFill');
+            const percentEl = document.getElementById('progressPercent');
+            const textEl = document.getElementById('progressText');
+            
+            fillEl.style.width = percent + '%';
+            percentEl.textContent = percent + '%';
+            textEl.textContent = text;
+            
+            // Add status indicator
+            let statusClass = 'status-processing';
+            let statusIcon = '⏳';
+            
+            if (percent === 100) {
+                statusClass = 'status-complete';
+                statusIcon = '✅';
+            } else if (percent === 0 && text.includes('Error')) {
+                statusClass = 'status-error';
+                statusIcon = '❌';
+            }
+            
+            textEl.className = `progress-text ${statusClass}`;
+            
+            // Animate progress text
+            textEl.classList.add('fade-in');
+            setTimeout(() => textEl.classList.remove('fade-in'), 500);
+        }
+
+        // Add smooth animations when content updates
+        function updateOutput(elementId, content) {
+            const el = document.getElementById(elementId);
+            el.style.opacity = '0.5';
+            setTimeout(() => {
+                el.textContent = content;
+                el.style.opacity = '1';
+            }, 150);
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // You can implement a toast notification here
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Initialize tooltips
+        document.querySelectorAll('.tooltip').forEach(el => {
+            el.setAttribute('data-tooltip', el.getAttribute('title') || '');
+        });
+
+        // Add loading animation to start button
+        document.getElementById('startBtn').addEventListener('click', function() {
+            if (!this.disabled) {
+                this.innerHTML = '<span class="spinner"></span> Processing...';
+            }
+        });
+
+        // Enhanced file selection feedback
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                document.getElementById('fileName').innerHTML = `
+                    <strong>📄 ${fileName}</strong><br>
+                    <small style="color: var(--text-light);">Size: ${fileSize} MB</small>
+                `;
+                document.getElementById('fileName').classList.add('fade-in');
+            }
+        });
+
+        console.log('%c🎙️ AI Audio Transcription Platform ', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; font-size: 16px; font-weight: bold;');
+        console.log('%cPowered by OpenAI Whisper & BART', 'color: #667eea; font-size: 12px;');
+    </script>
+</body>
+</html>
