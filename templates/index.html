@@ -1,1735 +1,2247 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI-Powered Audio Transcription & Analysis Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --accent-color: #f5576c;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --accent-color: #f5576c;
+        --text-dark: #2d3748;
+        --text-light: #718096;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f7fafc;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 90%, rgba(245, 87, 108, 0.08) 0%, transparent 50%);
-            min-height: 100vh;
-            padding: 30px 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #f7fafc;
+        background-image: radial-gradient(
+            circle at 20% 50%,
+            rgba(102, 126, 234, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(118, 75, 162, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 90%,
+            rgba(245, 87, 108, 0.08) 0%,
+            transparent 50%
+          );
+        min-height: 100vh;
+        /* // padding: 30px 20px; */
+        position: relative;
+        overflow-x: hidden;
+      }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
-            pointer-events: none;
-            z-index: 0;
-        }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(255, 255, 255, 0.95) 100%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
 
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 24px;
-            box-shadow: var(--shadow-xl);
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
+      .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        background: white;
+        /*  border-radius: 24px; */
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
 
-        .header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 50px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+      .header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 50px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: shimmer 8s linear infinite;
-        }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        animation: shimmer 8s linear infinite;
+      }
 
-        @keyframes shimmer {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+      @keyframes shimmer {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
         }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
 
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
 
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 12px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+      .header h1 {
+        font-size: 3em;
+        margin-bottom: 12px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        .header .subtitle {
-            font-size: 1.15em;
-            opacity: 0.95;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
+      .header .subtitle {
+        font-size: 1.15em;
+        opacity: 0.95;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+      }
 
-        .header .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            margin-top: 15px;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(10px);
-        }
+      .header .badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        margin-top: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+      }
 
-        .content {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 0;
-            min-height: 700px;
-        }
+      .content {
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        gap: 0;
+        min-height: 700px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      }
 
-        .sidebar {
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 35px;
-            border-right: 1px solid var(--border-color);
-            box-shadow: inset -1px 0 0 rgba(255,255,255,0.5);
-        }
+      .sidebar {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 20px;
+        /* border-right: 1px solid var(--border-color); */
+        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.5);
+      }
 
-        .main-content {
-            padding: 35px;
-            background: white;
-        }
+      .main-content {
+        margin: 25px 25px;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        padding: 35px;
+        background: white;
+      }
 
         .section-card {
             background: white;
             border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-
-        .section-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-
-        .section-title {
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: -0.3px;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: var(--primary-gradient);
-            border-radius: 2px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            display: none;
-        }
-
-        .file-input-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            background: white;
-            border: 2px dashed var(--primary-color);
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .file-input-label::before {
-            content: '📁';
-            font-size: 3em;
-            margin-bottom: 12px;
-            display: block;
-            opacity: 0.8;
-        }
-
-        .file-input-label:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border-color: var(--secondary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .file-input-label:hover::before {
-            animation: bounce 0.5s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .file-label-text {
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 1.05em;
-            margin-bottom: 6px;
-        }
-
-        .file-label-hint {
-            font-size: 0.85em;
-            color: var(--text-light);
-        }
-
-        .file-name {
-            margin-top: 16px;
-            padding: 12px 16px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-radius: 10px;
-            font-size: 0.9em;
-            color: var(--text-dark);
-            font-weight: 500;
-            word-break: break-all;
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .setting-group {
-            margin-bottom: 24px;
-        }
-
-        .setting-label {
-            display: block;
-            color: var(--text-dark);
-            margin-bottom: 12px;
-            font-weight: 600;
-            font-size: 0.95em;
-            letter-spacing: -0.2px;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .radio-option {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            background: white;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
-            position: relative;
-        }
-
-        .radio-option:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border-color: var(--primary-color);
-            transform: translateX(4px);
-        }
-
-        .radio-option input[type="radio"] {
-            margin-right: 12px;
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        .radio-option:has(input:checked) {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .radio-text {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .radio-badge {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .progress-container {
-            background: white;
             padding: 20px;
-            border-radius: 16px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border-color);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 14px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 14px;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-gradient);
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer-progress 2s infinite;
-        }
-
-        @keyframes shimmer-progress {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-percent {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.75em;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .progress-text {
-            font-size: 0.9em;
-            color: var(--text-light);
-            text-align: center;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
             transition: var(--transition);
-            margin-bottom: 12px;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.3px;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
+        .section-card:first-child {
+            margin-top: 0;
+        }      .section-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
 
-        .btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
+      .section-title {
+        color: var(--text-dark);
+        margin-bottom: 16px;
+        font-size: 1.1em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: -0.3px;
+      }
 
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
+      .section-title .material-icons {
+        font-size: 18px;
+        line-height: 1;
+        color: var(--primary-color);
+      }
 
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
+      .section-title::before {
+        content: "";
+        width: 4px;
+        height: 24px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+      }
 
-        .btn-primary:active:not(:disabled) {
-            transform: translateY(-1px);
-        }
+      .file-input-wrapper {
+        position: relative;
+      }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
+      .file-input-wrapper input[type="file"] {
+        display: none;
+      }
 
-        .btn-secondary {
-            background: white;
-            color: var(--primary-color);
-            border: 2px solid var(--border-color);
-        }
+      .file-input-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        background: white;
+        border: 2px dashed var(--primary-color);
+        border-radius: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
 
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
+      .file-input-label::before {
+        content: "📁";
+        font-size: 3em;
+        margin-bottom: 12px;
+        display: block;
+        opacity: 0.8;
+      }
 
-        .btn-danger {
-            background: var(--secondary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
-        }
+      .file-input-label:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05) 0%,
+          rgba(118, 75, 162, 0.05) 100%
+        );
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
 
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
-        }
+      .file-input-label:hover::before {
+        animation: bounce 0.5s;
+      }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 30px;
-            background: #f8fafc;
-            padding: 6px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
         }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
 
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            font-size: 0.95em;
-            color: var(--text-light);
-            transition: var(--transition);
-            border-radius: 10px;
-            font-weight: 500;
-            position: relative;
-            letter-spacing: -0.2px;
-        }
+      .file-label-text {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1.05em;
+        margin-bottom: 6px;
+      }
 
-        .tab.active {
-            background: white;
-            color: var(--primary-color);
-            font-weight: 700;
-            box-shadow: var(--shadow-sm);
-        }
+      .file-label-hint {
+        font-size: 0.85em;
+        color: var(--text-light);
+      }
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
-            height: 3px;
-            background: var(--primary-gradient);
-            border-radius: 2px 2px 0 0;
-        }
+      .file-name {
+        margin-top: 16px;
+        padding: 12px 16px;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-radius: 10px;
+        font-size: 0.9em;
+        color: var(--text-dark);
+        font-weight: 500;
+        word-break: break-all;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+      }
 
-        .tab:hover:not(.active) {
-            color: var(--primary-color);
-            background: rgba(102, 126, 234, 0.05);
+      .setting-group {
+        margin-bottom: 18px;
+      }
+
+      .setting-label {
+        display: block;
+        color: var(--text-dark);
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 0.95em;
+        letter-spacing: -0.2px;
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        padding: 12px 14px;
+
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+
+        position: relative;
+        margin-bottom: 6px;
+      }
+
+      .radio-option:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        transform: translateX(2px);
+      }
+
+      .radio-option input[type="radio"] {
+        margin-right: 12px;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-color);
+        cursor: pointer;
+      }
+
+      .radio-option:has(input:checked) {
+        background: #e0e7ff;
+        border-color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .radio-text {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .radio-badge {
+        background: #64748b6b;
+        color: #645b5b;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.7em;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        opacity: 0.8;
+      }
+
+      .progress-container {
+        background: white;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 14px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 14px;
+        position: relative;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--primary-gradient);
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: shimmer-progress 2s infinite;
+      }
+
+      @keyframes shimmer-progress {
+        0% {
+          transform: translateX(-100%);
         }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .progress-percent {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.75em;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .progress-text {
+        font-size: 0.9em;
+        color: var(--text-light);
+        text-align: center;
+        font-weight: 500;
+        line-height: 1.5;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 16px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin: 12px 0px;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn .material-icons {
+        font-size: 18px;
+        line-height: 1;
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'liga';
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .btn:active::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      .btn-primary {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:active:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary-color);
+        border: 2px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05) 0%,
+          rgba(118, 75, 162, 0.05) 100%
+        );
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-danger {
+        background: var(--secondary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+      }
+
+      .btn-danger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 30px;
+        background: #f8fafc;
+        padding: 6px;
+        border-radius: 14px;
+        border: 1px solid var(--border-color);
+      }
+
+      .tab {
+        padding: 12px 20px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        font-size: 0.95em;
+        color: var(--text-light);
+        transition: var(--transition);
+        border-radius: 10px;
+        font-weight: 500;
+        position: relative;
+        letter-spacing: -0.2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 44px;
+      }
+
+        .tab .material-icons {
+            font-size: 16px;
+            line-height: 1;
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            display: inline-block;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: 'liga';
+        }      .tab.active {
+        background: white;
+        color: var(--primary-color);
+        font-weight: 700;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 2px 2px 0 0;
+      }
+
+      .tab:hover:not(.active) {
+        color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.05);
+      }
 
         .tab-content {
             display: none;
+            margin-top: 0;
+            padding-top: 0;
         }
 
         .tab-content.active {
             display: block;
-        }
+            margin-top: 0;
+            padding-top: 0;
+        }      .output-box {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 28px;
+        min-height: 450px;
+        max-height: 650px;
+        overflow-y: auto;
+        font-size: 0.95em;
+        line-height: 1.8;
+        color: var(--text-dark);
+        white-space: pre-wrap;
+        font-family: "Inter", "SF Mono", Monaco, "Cascadia Code", monospace;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+        position: relative;
+      }
 
-        .output-box {
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 28px;
-            min-height: 450px;
-            max-height: 650px;
-            overflow-y: auto;
-            font-size: 0.95em;
-            line-height: 1.8;
-            color: var(--text-dark);
-            white-space: pre-wrap;
-            font-family: 'Inter', 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-            position: relative;
-        }
+      .output-box:empty::before {
+        content: attr(data-placeholder);
+        color: var(--text-light);
+        font-style: italic;
+      }
 
-        .output-box:empty::before {
-            content: attr(data-placeholder);
-            color: var(--text-light);
-            font-style: italic;
-        }
+      .output-box::-webkit-scrollbar {
+        width: 10px;
+      }
 
-        .output-box::-webkit-scrollbar {
-            width: 10px;
-        }
+      .output-box::-webkit-scrollbar-track {
+        background: #e2e8f0;
+        border-radius: 10px;
+        margin: 4px 0;
+      }
 
-        .output-box::-webkit-scrollbar-track {
-            background: #e2e8f0;
-            border-radius: 10px;
-            margin: 4px 0;
-        }
+      .output-box::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+      }
 
-        .output-box::-webkit-scrollbar-thumb {
-            background: var(--primary-gradient);
-            border-radius: 10px;
-            border: 2px solid #e2e8f0;
-        }
+      .output-box::-webkit-scrollbar-thumb:hover {
+        background: var(--dark-gradient);
+      }
 
-        .output-box::-webkit-scrollbar-thumb:hover {
-            background: var(--dark-gradient);
-        }
-
-        .qa-section {
-            margin-bottom: 20px;
-        }
+      .qa-section {
+        margin-bottom: 20px;
+      }
 
         .qa-input-group {
             display: flex;
-            gap: 10px;
+            align-items: stretch;
+            gap: 12px;
             margin-bottom: 15px;
+            margin-top: 0;
         }
 
         .qa-input {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1em;
-        }
-
-        .qa-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn-small {
-            padding: 12px 25px;
-            font-size: 0.9em;
-        }
-
-        .entity-list, .topic-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .entity-tag, .topic-tag {
-            padding: 8px 15px;
-            background: #e0e8ff;
-            color: #667eea;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .alert-info {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .alert-error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .status-processing {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: var(--primary-color);
-        }
-
-        .status-complete {
-            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
-            color: #11998e;
-        }
-
-        .status-error {
-            background: linear-gradient(135deg, rgba(245, 87, 108, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
-            color: var(--accent-color);
-        }
-
-        .spinner {
-            width: 12px;
-            height: 12px;
-            border: 2px solid currentColor;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .pulse {
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tooltip {
-            position: relative;
-        }
-
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 12px;
-            background: var(--dark-gradient);
-            color: white;
-            border-radius: 8px;
-            font-size: 0.75em;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            margin-bottom: 5px;
-        }
-
-        .tooltip:hover::after {
-            opacity: 1;
-        }
-
-        @media (max-width: 1200px) {
-            .content {
-                grid-template-columns: 380px 1fr;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .header h1 {
-                font-size: 2.2em;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            .header {
-                padding: 30px 20px;
-            }
-
-            .header h1 {
-                font-size: 1.8em;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
-            }
-
-            .tab {
-                font-size: 0.85em;
-                padding: 10px 16px;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Professional scrollbar for body */
-        body::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        body::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        body::-webkit-scrollbar-thumb {
-            background: var(--primary-gradient);
-            border-radius: 6px;
-            border: 2px solid #f1f5f9;
-        }
-
-        /* Additional styles for new features */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
+            padding: 16px 20px;
             border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            background: white;
             transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            height: 52px;
+            box-sizing: border-box;
+        }      .qa-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1),
+          0 2px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .qa-input::placeholder {
+        color: var(--text-light);
+        font-style: italic;
+      }
+
+      .btn-small {
+        width: auto;
+        padding: 0 24px;
+        font-size: 0.95em;
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+        height: 52px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+      }
+
+      .btn-small .material-icons {
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .qa-btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0 24px;
+        font-size: 0.95em;
+        font-weight: 600;
+        min-width: 140px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+      }
+
+      .qa-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .qa-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+      }
+
+      .qa-btn .material-icons {
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      /* Ensure all headings with icons are properly aligned */
+      h3,
+      h4 {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+
+      h3 .material-icons,
+      h4 .material-icons {
+        font-size: 18px !important;
+        line-height: 1 !important;
+        color: var(--primary-color) !important;
+      }
+
+      /* Comprehensive Material Icons support for all browsers */
+      .material-icons {
+        font-family: 'Material Icons' !important;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'liga';
+      }
+
+      .entity-list,
+      .topic-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .entity-tag,
+      .topic-tag {
+        padding: 4px 10px;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        color: #475569;
+        border-radius: 16px;
+        font-size: 0.75em;
+        font-weight: 500;
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .entity-tag:hover,
+      .topic-tag:hover {
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .alert-info {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .alert-error {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .alert-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      .status-processing {
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        color: var(--primary-color);
+      }
+
+      .status-complete {
+        background: linear-gradient(
+          135deg,
+          rgba(17, 153, 142, 0.1) 0%,
+          rgba(56, 239, 125, 0.1) 100%
+        );
+        color: #11998e;
+      }
+
+      .status-error {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 87, 108, 0.1) 0%,
+          rgba(240, 147, 251, 0.1) 100%
+        );
+        color: var(--accent-color);
+      }
+
+      .spinner {
+        width: 12px;
+        height: 12px;
+        border: 2px solid currentColor;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .tooltip {
+        position: relative;
+      }
+
+      .tooltip::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 12px;
+        background: var(--dark-gradient);
+        color: white;
+        border-radius: 8px;
+        font-size: 0.75em;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        margin-bottom: 5px;
+      }
+
+      .tooltip:hover::after {
+        opacity: 1;
+      }
+
+      @media (max-width: 1200px) {
+        .content {
+          grid-template-columns: 380px 1fr;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .content {
+          grid-template-columns: 1fr;
         }
 
-        .stat-item:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
         }
 
-        .stat-value {
-            font-size: 2em;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
+        .header h1 {
+          font-size: 2.2em;
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
         }
 
-        .stat-label {
-            font-size: 0.85em;
-            color: var(--text-light);
-            font-weight: 500;
+        .header {
+          padding: 30px 20px;
         }
 
-        .qa-method-selector {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 10px;
+        .header h1 {
+          font-size: 1.8em;
         }
 
-        .method-option {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            color: var(--text-dark);
-            font-weight: 500;
+        .tabs {
+          flex-wrap: wrap;
         }
 
-        .method-option input[type="radio"] {
-            accent-color: var(--primary-color);
+        .tab {
+          font-size: 0.85em;
+          padding: 10px 16px;
         }
+      }
 
-        .qa-result-card {
-            margin-top: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-color);
-            box-shadow: var(--shadow-sm);
-        }
+      .hidden {
+        display: none !important;
+      }
 
-        .qa-result-card h4 {
-            margin-bottom: 15px;
-            color: var(--text-dark);
-            font-size: 1.1em;
-        }
+      /* Professional scrollbar for body */
+      body::-webkit-scrollbar {
+        width: 12px;
+      }
 
-        .answer-text {
-            padding: 15px;
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 10px;
-            line-height: 1.7;
-            margin-bottom: 15px;
-        }
+      body::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
 
-        .confidence-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      body::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 6px;
+        border: 2px solid #f1f5f9;
+      }
 
-        .confidence-label {
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--text-light);
-            min-width: 90px;
-        }
+      /* Additional styles for new features */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
 
-        .confidence-meter {
-            flex: 1;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+      .stat-item {
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        transition: var(--transition);
+      }
 
-        .confidence-fill {
-            height: 100%;
-            background: var(--success-gradient);
-            transition: width 0.5s ease;
-        }
+      .stat-item:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+      }
 
-        .confidence-value {
-            font-weight: 700;
-            color: var(--primary-color);
-            min-width: 45px;
-        }
+      .stat-value {
+        font-size: 2em;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
 
-        .qa-comparison {
-            margin-top: 20px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border-radius: 12px;
-            border: 2px solid var(--primary-color);
-        }
+      .stat-label {
+        font-size: 0.85em;
+        color: var(--text-light);
+        font-weight: 500;
+      }
 
-        .qa-comparison h4 {
-            margin-bottom: 12px;
-            color: var(--primary-color);
-        }
+      .qa-method-selector {
+        display: flex;
+        gap: 20px;
+        margin-top: 15px;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+      }
 
-        .comparison-text {
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
+      .method-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: var(--text-dark);
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: var(--transition);
+      }
 
-        .analysis-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+      .method-option:hover {
+        background: rgba(102, 126, 234, 0.05);
+      }
 
-        .analysis-card {
-            padding: 25px;
-            background: white;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-        }
+      .method-option input[type="radio"] {
+        accent-color: var(--primary-color);
+      }
 
-        .analysis-card h4 {
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            color: var(--text-dark);
-        }
+      .qa-result-card {
+        margin-top: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        border-left: 4px solid var(--primary-color);
+        box-shadow: var(--shadow-sm);
+      }
 
-        .method-desc {
-            font-size: 0.85em;
-            color: var(--text-light);
-            margin-bottom: 20px;
-            padding: 8px 12px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-radius: 6px;
-        }
+      .qa-result-card h4 {
+        margin-bottom: 15px;
+        color: var(--text-dark);
+        font-size: 1.1em;
+      }
 
-        .metric-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
+      .answer-text {
+        padding: 15px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 10px;
+        line-height: 1.7;
+        margin-bottom: 15px;
+      }
 
-        .metric-row:last-child {
-            border-bottom: none;
-        }
+      .confidence-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-        .metric-label {
-            font-size: 0.9em;
-            color: var(--text-light);
-            font-weight: 500;
-        }
+      .confidence-label {
+        font-size: 0.9em;
+        font-weight: 600;
+        color: var(--text-light);
+        min-width: 90px;
+      }
 
-        .metric-value {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
+      .confidence-meter {
+        flex: 1;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
 
-        .comparison-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
+      .confidence-fill {
+        height: 100%;
+        background: var(--success-gradient);
+        transition: width 0.5s ease;
+      }
 
-        .comparison-item {
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            border: 2px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .confidence-value {
+        font-weight: 700;
+        color: var(--primary-color);
+        min-width: 45px;
+      }
 
-        .comparison-label {
-            font-size: 0.9em;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
+      .qa-comparison {
+        margin-top: 20px;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.05) 0%,
+          rgba(118, 75, 162, 0.05) 100%
+        );
+        border-radius: 12px;
+        border: 2px solid var(--primary-color);
+      }
 
-        .comparison-value {
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 1.1em;
-        }
+      .qa-comparison h4 {
+        margin-bottom: 12px;
+        color: var(--primary-color);
+      }
 
+      .comparison-text {
+        font-size: 0.95em;
+        line-height: 1.6;
+      }
+
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .analysis-card {
+        padding: 25px;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .analysis-card h4 {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .analysis-card h4 .material-icons,
+      h3 .material-icons {
+        font-size: 18px;
+        line-height: 1;
+        color: var(--primary-color);
+      }
+
+      h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+
+      .method-desc {
+        font-size: 0.85em;
+        color: var(--text-light);
+        margin-bottom: 20px;
+        padding: 8px 12px;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 100%
+        );
+        border-radius: 6px;
+      }
+
+      .metric-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .metric-row:last-child {
+        border-bottom: none;
+      }
+
+      .metric-label {
+        font-size: 0.9em;
+        color: var(--text-light);
+        font-weight: 500;
+      }
+
+      .metric-value {
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .comparison-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .comparison-item {
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .comparison-label {
+        font-size: 0.9em;
+        color: var(--text-dark);
+        font-weight: 500;
+      }
+
+      .comparison-value {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.1em;
+      }
+
+      .summary-comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 15px;
+      }
+
+      .summary-col h5 {
+        margin-bottom: 12px;
+        color: var(--text-dark);
+        font-size: 1em;
+      }
+
+      .summary-text {
+        padding: 15px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 10px;
+        min-height: 150px;
+        line-height: 1.7;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 768px) {
         .summary-comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 15px;
+          grid-template-columns: 1fr;
         }
 
-        .summary-col h5 {
-            margin-bottom: 12px;
-            color: var(--text-dark);
-            font-size: 1em;
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
-
-        .summary-text {
-            padding: 15px;
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 10px;
-            min-height: 150px;
-            line-height: 1.7;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            .summary-comparison {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <h1>🎙️ AI Audio Transcription Platform</h1>
-                <p class="subtitle">Professional speech-to-text conversion with advanced AI analysis</p>
-                <span class="badge">✨ Powered by OpenAI Whisper & BART</span>
+      <div class="header">
+        <div class="header-content">
+          <h1>🎙️ AI Audio Transcription Platform</h1>
+          <p class="subtitle">
+            Professional speech-to-text conversion with advanced AI analysis
+          </p>
+          <span class="badge"
+            >✨ Powered by OpenAI Whisper & Transformer Models</span
+          >
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="sidebar">
+          <div class="section-card">
+            <div class="section-title">Upload Media File</div>
+            <div class="file-input-wrapper">
+              <input
+                type="file"
+                id="fileInput"
+                accept=".mp3,.mp4,.wav,.m4a,.wma,.avi,.mkv"
+              />
+              <label for="fileInput" class="file-input-label">
+                <span class="file-label-text">Select Your File</span>
+                <span class="file-label-hint"
+                  >Drop your audio or video file here</span
+                >
+              </label>
+              <div class="file-name" id="fileName"></div>
             </div>
+          </div>
+
+          <div class="section-card">
+            <div class="section-title">Configuration</div>
+
+            <div class="setting-group">
+              <label class="setting-label">Model Quality</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="model" value="base" checked />
+                  <div class="radio-text">
+                    <span>Fast Mode</span>
+                    <span class="radio-badge">QUICK</span>
+                  </div>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="model" value="small" />
+                  <div class="radio-text">
+                    <span>Balanced Mode</span>
+                    <span class="radio-badge">RECOMMENDED</span>
+                  </div>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="model" value="medium" />
+                  <div class="radio-text">
+                    <span>Precision Mode</span>
+                    <span class="radio-badge">ACCURATE</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-group">
+              <label class="setting-label">Processing Chunk Size</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="chunk" value="30" checked />
+                  <span>30 seconds</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="chunk" value="60" />
+                  <span>1 minute</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="chunk" value="120" />
+                  <span>2 minutes</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-container">
+            <div class="section-title">Processing Status</div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 0%"
+              ></div>
+              <div class="progress-percent" id="progressPercent">0%</div>
+            </div>
+            <div class="progress-text" id="progressText">
+              Ready to start processing
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="startBtn">
+            <i class="material-icons">play_arrow</i> Start Processing
+          </button>
+          <button class="btn btn-danger hidden" id="cancelBtn">
+            <i class="material-icons">stop</i> Stop Processing
+          </button>
+          <button class="btn btn-secondary" id="clearBtn">
+            <i class="material-icons">clear_all</i> Clear All Results
+          </button>
         </div>
 
-        <div class="content">
-            <div class="sidebar">
-                <div class="section-card">
-                    <div class="section-title">Upload Media File</div>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="fileInput" accept=".mp3,.mp4,.wav,.m4a,.wma,.avi,.mkv">
-                        <label for="fileInput" class="file-input-label">
-                            <span class="file-label-text">Select Your File</span>
-                            <span class="file-label-hint">Drop your audio or video file here</span>
-                        </label>
-                        <div class="file-name" id="fileName"></div>
-                    </div>
+        <div class="main-content">
+          <div class="tabs">
+            <button class="tab active" data-tab="transcript">
+              <i class="material-icons">description</i> Transcription
+            </button>
+            <button class="tab" data-tab="abstractive">
+              <i class="material-icons">summarize</i> AI Summary
+            </button>
+            <button
+              class="tab"
+              data-tab="extractive"
+              {%
+              if
+              not
+              advanced_features
+              %}class="tab hidden"
+              {%
+              endif
+              %}
+            >
+              <i class="material-icons">insights</i> Key Insights
+            </button>
+            <button
+              class="tab"
+              data-tab="qa"
+              {%
+              if
+              not
+              advanced_features
+              %}class="tab hidden"
+              {%
+              endif
+              %}
+            >
+              <i class="material-icons">chat</i> Q&A
+            </button>
+            <button
+              class="tab"
+              data-tab="analysis"
+              {%
+              if
+              not
+              advanced_features
+              %}class="tab hidden"
+              {%
+              endif
+              %}
+            >
+              <i class="material-icons">analytics</i> Analysis
+            </button>
+          </div>
+
+          <div class="tab-content active" id="transcript">
+            <div
+              class="output-box"
+              id="transcriptBox"
+              data-placeholder="Your transcription will appear here..."
+            >
+              Your transcription will appear here...
+            </div>
+          </div>
+
+          <div class="tab-content" id="abstractive">
+            <div
+              class="output-box"
+              id="abstractiveBox"
+              data-placeholder="AI-generated summary will appear here..."
+            >
+              AI-generated summary will appear here...
+            </div>
+          </div>
+
+          <div class="tab-content" id="extractive">
+            <div class="section-card">
+              <h3>
+                <i class="material-icons">assessment</i> Content Statistics
+              </h3>
+              <div class="stats-grid" id="statsGrid">
+                <div class="stat-item">
+                  <div class="stat-value" id="statWords">-</div>
+                  <div class="stat-label">Total Words</div>
                 </div>
-
-                <div class="section-card">
-                    <div class="section-title">Configuration</div>
-                    
-                    <div class="setting-group">
-                        <label class="setting-label">Model Quality</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="model" value="base" checked>
-                                <div class="radio-text">
-                                    <span>Fast Mode</span>
-                                    <span class="radio-badge">QUICK</span>
-                                </div>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="model" value="small">
-                                <div class="radio-text">
-                                    <span>Balanced Mode</span>
-                                    <span class="radio-badge">RECOMMENDED</span>
-                                </div>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="model" value="medium">
-                                <div class="radio-text">
-                                    <span>Precision Mode</span>
-                                    <span class="radio-badge">ACCURATE</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="setting-group">
-                        <label class="setting-label">Processing Chunk Size</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="chunk" value="30" checked>
-                                <span>30 seconds</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="chunk" value="60">
-                                <span>1 minute</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="chunk" value="120">
-                                <span>2 minutes</span>
-                            </label>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                  <div class="stat-value" id="statSentences">-</div>
+                  <div class="stat-label">Sentences</div>
                 </div>
-
-                <div class="progress-container">
-                    <div class="section-title">Processing Status</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                        <div class="progress-percent" id="progressPercent">0%</div>
-                    </div>
-                    <div class="progress-text" id="progressText">Ready to start processing</div>
+                <div class="stat-item">
+                  <div class="stat-value" id="statAvgLength">-</div>
+                  <div class="stat-label">Avg Length</div>
                 </div>
-
-                <button class="btn btn-primary" id="startBtn">🚀 Start Processing</button>
-                <button class="btn btn-danger hidden" id="cancelBtn">⏹️ Stop Processing</button>
-                <button class="btn btn-secondary" id="clearBtn">🗑️ Clear All Results</button>
+                <div class="stat-item">
+                  <div class="stat-value" id="statUnique">-</div>
+                  <div class="stat-label">Unique Words</div>
+                </div>
+              </div>
             </div>
 
-            <div class="main-content">
-                <div class="tabs">
-                    <button class="tab active" data-tab="transcript">📝 Transcription</button>
-                    <button class="tab" data-tab="abstractive">🎯 AI Summary</button>
-                    <button class="tab" data-tab="extractive" {% if not advanced_features %}class="tab hidden"{% endif %}>📊 Key Insights</button>
-                    <button class="tab" data-tab="qa" {% if not advanced_features %}class="tab hidden"{% endif %}>💬 Q&A</button>
-                    <button class="tab" data-tab="analysis" {% if not advanced_features %}class="tab hidden"{% endif %}>🔍 Analysis</button>
-                </div>
-
-                <div class="tab-content active" id="transcript">
-                    <div class="output-box" id="transcriptBox" data-placeholder="Your transcription will appear here...">Your transcription will appear here...</div>
-                </div>
-
-                <div class="tab-content" id="abstractive">
-                    <div class="output-box" id="abstractiveBox" data-placeholder="AI-generated summary will appear here...">AI-generated summary will appear here...</div>
-                </div>
-
-                <div class="tab-content" id="extractive">
-                    <div class="section-card">
-                        <h3>📊 Extractive Summary (TextRank)</h3>
-                        <div class="output-box" id="extractiveBox" data-placeholder="Key sentences extracted using TextRank algorithm will appear here...">Extractive summary will appear here...</div>
-                    </div>
-                    
-                    <div class="section-card">
-                        <h3>🏷️ Named Entities</h3>
-                        <div class="entity-list" id="entityListKey"></div>
-                    </div>
-                    
-                    <div class="section-card">
-                        <h3>📈 Topics Identified (LDA)</h3>
-                        <div class="topic-list" id="topicListKey"></div>
-                    </div>
-                    
-                    <div class="section-card">
-                        <h3>📊 Statistics</h3>
-                        <div class="stats-grid" id="statsGrid">
-                            <div class="stat-item">
-                                <div class="stat-value" id="statWords">-</div>
-                                <div class="stat-label">Total Words</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="statSentences">-</div>
-                                <div class="stat-label">Sentences</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="statAvgLength">-</div>
-                                <div class="stat-label">Avg Length</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="statUnique">-</div>
-                                <div class="stat-label">Unique Words</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="qa">
-                    <div class="section-card">
-                        <h3>💬 Ask Questions About Your Content</h3>
-                        <div class="qa-input-group">
-                            <input type="text" class="qa-input" id="qaQuestion" placeholder="Ask a question about the transcript..." onkeypress="if(event.key==='Enter') document.getElementById('qaBtn').click()">
-                            <button class="btn btn-primary btn-small" id="qaBtn">🔍 Ask</button>
-                        </div>
-                        <div class="qa-method-selector">
-                            <label class="method-option">
-                                <input type="radio" name="qaMethod" value="both" checked>
-                                <span>Both Methods</span>
-                            </label>
-                            <label class="method-option">
-                                <input type="radio" name="qaMethod" value="structured">
-                                <span>Structured (Keyword)</span>
-                            </label>
-                            <label class="method-option">
-                                <input type="radio" name="qaMethod" value="unstructured">
-                                <span>Unstructured (AI)</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div id="qaResults">
-                        <div class="qa-result-card" id="structuredAnswer" style="display:none;">
-                            <h4>🔑 Structured Answer (Keyword-based)</h4>
-                            <div class="answer-text" id="structuredAnswerText"></div>
-                            <div class="confidence-bar">
-                                <span class="confidence-label">Confidence:</span>
-                                <div class="confidence-meter">
-                                    <div class="confidence-fill" id="structuredConfidence"></div>
-                                </div>
-                                <span class="confidence-value" id="structuredConfidenceValue">-</span>
-                            </div>
-                        </div>
-                        
-                        <div class="qa-result-card" id="unstructuredAnswer" style="display:none;">
-                            <h4>🤖 Unstructured Answer (Transformer-based)</h4>
-                            <div class="answer-text" id="unstructuredAnswerText"></div>
-                            <div class="confidence-bar">
-                                <span class="confidence-label">Confidence:</span>
-                                <div class="confidence-meter">
-                                    <div class="confidence-fill" id="unstructuredConfidence"></div>
-                                </div>
-                                <span class="confidence-value" id="unstructuredConfidenceValue">-</span>
-                            </div>
-                        </div>
-                        
-                        <div class="qa-comparison" id="qaComparison" style="display:none;">
-                            <h4>📊 Method Comparison</h4>
-                            <div class="comparison-text" id="comparisonText"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="analysis">
-                    <div class="section-card">
-                        <h3>🔬 Comparative Analysis: Structured vs Unstructured NLP</h3>
-                        <button class="btn btn-primary" id="runAnalysisBtn">▶️ Run Comparative Analysis</button>
-                    </div>
-                    
-                    <div id="analysisResults" style="display:none;">
-                        <div class="analysis-grid">
-                            <div class="analysis-card">
-                                <h4>🔑 Structured Approach</h4>
-                                <div class="method-desc">Extractive (TextRank + TF-IDF)</div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Processing Time:</span>
-                                    <span class="metric-value" id="structuredTime">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Memory Used:</span>
-                                    <span class="metric-value" id="structuredMemory">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Word Count:</span>
-                                    <span class="metric-value" id="structuredWords">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Readability:</span>
-                                    <span class="metric-value" id="structuredReadability">-</span>
-                                </div>
-                            </div>
-                            
-                            <div class="analysis-card">
-                                <h4>🤖 Unstructured Approach</h4>
-                                <div class="method-desc">Abstractive (BART Transformer)</div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Processing Time:</span>
-                                    <span class="metric-value" id="unstructuredTime">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Memory Used:</span>
-                                    <span class="metric-value" id="unstructuredMemory">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Word Count:</span>
-                                    <span class="metric-value" id="unstructuredWords">-</span>
-                                </div>
-                                <div class="metric-row">
-                                    <span class="metric-label">Readability:</span>
-                                    <span class="metric-value" id="unstructuredReadability">-</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>⚡ Performance Comparison</h4>
-                            <div class="comparison-metrics">
-                                <div class="comparison-item">
-                                    <span class="comparison-label">Faster Method:</span>
-                                    <span class="comparison-value" id="fasterMethod">-</span>
-                                </div>
-                                <div class="comparison-item">
-                                    <span class="comparison-label">Speed Ratio:</span>
-                                    <span class="comparison-value" id="speedRatio">-</span>
-                                </div>
-                                <div class="comparison-item">
-                                    <span class="comparison-label">More Memory Efficient:</span>
-                                    <span class="comparison-value" id="memoryEfficient">-</span>
-                                </div>
-                                <div class="comparison-item">
-                                    <span class="comparison-label">Compression Ratio (Structured):</span>
-                                    <span class="comparison-value" id="compressionStructured">-</span>
-                                </div>
-                                <div class="comparison-item">
-                                    <span class="comparison-label">Compression Ratio (Abstractive):</span>
-                                    <span class="comparison-value" id="compressionAbstractive">-</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="section-card">
-                            <h4>📝 Summary Comparison</h4>
-                            <div class="summary-comparison">
-                                <div class="summary-col">
-                                    <h5>Structured Summary</h5>
-                                    <div class="summary-text" id="analysisStructuredSummary">-</div>
-                                </div>
-                                <div class="summary-col">
-                                    <h5>Unstructured Summary</h5>
-                                    <div class="summary-text" id="analysisUnstructuredSummary">-</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="section-card">
+              <h3>
+                <i class="material-icons">article</i> Extractive Summary
+                (TextRank)
+              </h3>
+              <div
+                class="output-box"
+                id="extractiveBox"
+                data-placeholder="Key sentences extracted using TextRank algorithm will appear here..."
+              >
+                Extractive summary will appear here...
+              </div>
             </div>
+
+            <div class="section-card">
+              <h3>
+                <i class="material-icons">trending_up</i> Key Topics Analysis
+              </h3>
+              <div class="topic-list" id="topicListKey"></div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="qa">
+            <div class="section-card">
+              <h3>
+                <i class="material-icons">question_answer</i> Interactive Q&A
+                System
+              </h3>
+              <div class="qa-input-group">
+                <input
+                  type="text"
+                  class="qa-input"
+                  id="qaQuestion"
+                  placeholder="Type your question about the content..."
+                  onkeypress="if(event.key==='Enter') document.getElementById('qaBtn').click()"
+                />
+                <button class="qa-btn" id="qaBtn">
+                  <i class="material-icons">search</i> Ask Question
+                </button>
+              </div>
+              <div class="qa-method-selector">
+                <label class="method-option">
+                  <input type="radio" name="qaMethod" value="both" checked />
+                  <span>Both Methods</span>
+                </label>
+                <label class="method-option">
+                  <input type="radio" name="qaMethod" value="structured" />
+                  <span>Structured (Keyword)</span>
+                </label>
+                <label class="method-option">
+                  <input type="radio" name="qaMethod" value="unstructured" />
+                  <span>Unstructured (AI)</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="qaResults">
+              <div
+                class="qa-result-card"
+                id="structuredAnswer"
+                style="display: none"
+              >
+                <h4>🔑 Structured Answer (Keyword-based)</h4>
+                <div class="answer-text" id="structuredAnswerText"></div>
+                <div class="confidence-bar">
+                  <span class="confidence-label">Confidence:</span>
+                  <div class="confidence-meter">
+                    <div
+                      class="confidence-fill"
+                      id="structuredConfidence"
+                    ></div>
+                  </div>
+                  <span class="confidence-value" id="structuredConfidenceValue"
+                    >-</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="qa-result-card"
+                id="unstructuredAnswer"
+                style="display: none"
+              >
+                <h4>🤖 Unstructured Answer (Transformer-based)</h4>
+                <div class="answer-text" id="unstructuredAnswerText"></div>
+                <div class="confidence-bar">
+                  <span class="confidence-label">Confidence:</span>
+                  <div class="confidence-meter">
+                    <div
+                      class="confidence-fill"
+                      id="unstructuredConfidence"
+                    ></div>
+                  </div>
+                  <span
+                    class="confidence-value"
+                    id="unstructuredConfidenceValue"
+                    >-</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="qa-comparison"
+                id="qaComparison"
+                style="display: none"
+              >
+                <h4>📊 Method Comparison</h4>
+                <div class="comparison-text" id="comparisonText"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="analysis">
+            <div class="section-card">
+              <h3>🔬 Comparative Analysis: Structured vs Unstructured NLP</h3>
+              <button class="btn btn-primary" id="runAnalysisBtn">
+                <i class="material-icons">play_arrow</i> Run Comparative
+                Analysis
+              </button>
+            </div>
+
+            <div id="analysisResults" style="display: none">
+              <div class="analysis-grid">
+                <div class="analysis-card">
+                  <h4>🔑 Structured Approach</h4>
+                  <div class="method-desc">Extractive (TextRank + TF-IDF)</div>
+                  <div class="metric-row">
+                    <span class="metric-label">Processing Time:</span>
+                    <span class="metric-value" id="structuredTime">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Memory Used:</span>
+                    <span class="metric-value" id="structuredMemory">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Word Count:</span>
+                    <span class="metric-value" id="structuredWords">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Readability:</span>
+                    <span class="metric-value" id="structuredReadability"
+                      >-</span
+                    >
+                  </div>
+                </div>
+
+                <div class="analysis-card">
+                  <h4>🤖 Unstructured Approach</h4>
+                  <div class="method-desc">Abstractive (BART Transformer)</div>
+                  <div class="metric-row">
+                    <span class="metric-label">Processing Time:</span>
+                    <span class="metric-value" id="unstructuredTime">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Memory Used:</span>
+                    <span class="metric-value" id="unstructuredMemory">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Word Count:</span>
+                    <span class="metric-value" id="unstructuredWords">-</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Readability:</span>
+                    <span class="metric-value" id="unstructuredReadability"
+                      >-</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <h4>⚡ Performance Comparison</h4>
+                <div class="comparison-metrics">
+                  <div class="comparison-item">
+                    <span class="comparison-label">Faster Method:</span>
+                    <span class="comparison-value" id="fasterMethod">-</span>
+                  </div>
+                  <div class="comparison-item">
+                    <span class="comparison-label">Speed Ratio:</span>
+                    <span class="comparison-value" id="speedRatio">-</span>
+                  </div>
+                  <div class="comparison-item">
+                    <span class="comparison-label">More Memory Efficient:</span>
+                    <span class="comparison-value" id="memoryEfficient">-</span>
+                  </div>
+                  <div class="comparison-item">
+                    <span class="comparison-label"
+                      >Compression Ratio (Structured):</span
+                    >
+                    <span class="comparison-value" id="compressionStructured"
+                      >-</span
+                    >
+                  </div>
+                  <div class="comparison-item">
+                    <span class="comparison-label"
+                      >Compression Ratio (Abstractive):</span
+                    >
+                    <span class="comparison-value" id="compressionAbstractive"
+                      >-</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <h4>📝 Summary Comparison</h4>
+                <div class="summary-comparison">
+                  <div class="summary-col">
+                    <h5>Structured Summary</h5>
+                    <div class="summary-text" id="analysisStructuredSummary">
+                      -
+                    </div>
+                  </div>
+                  <div class="summary-col">
+                    <h5>Unstructured Summary</h5>
+                    <div class="summary-text" id="analysisUnstructuredSummary">
+                      -
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script>
-        let currentTaskId = null;
-        let statusInterval = null;
+      let currentTaskId = null;
+      let statusInterval = null;
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((c) => c.classList.remove("active"));
+
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.tab).classList.add("active");
+        });
+      });
+
+      // File selection
+      document.getElementById("fileInput").addEventListener("change", (e) => {
+        const fileName = e.target.files[0]?.name || "";
+        document.getElementById("fileName").textContent = fileName
+          ? `Selected: ${fileName}`
+          : "";
+      });
+
+      // Start button
+      document
+        .getElementById("startBtn")
+        .addEventListener("click", async () => {
+          const fileInput = document.getElementById("fileInput");
+          if (!fileInput.files[0]) {
+            alert("Please select a file first!");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("file", fileInput.files[0]);
+          formData.append(
+            "model",
+            document.querySelector('input[name="model"]:checked').value
+          );
+          formData.append(
+            "chunk_size",
+            document.querySelector('input[name="chunk"]:checked').value
+          );
+
+          try {
+            document.getElementById("startBtn").disabled = true;
+            document.getElementById("cancelBtn").classList.remove("hidden");
+
+            const response = await fetch("/upload", {
+              method: "POST",
+              body: formData,
             });
+
+            const data = await response.json();
+            if (response.ok) {
+              currentTaskId = data.task_id;
+              startStatusPolling();
+            } else {
+              alert("Error: " + data.error);
+              document.getElementById("startBtn").disabled = false;
+              document.getElementById("cancelBtn").classList.add("hidden");
+            }
+          } catch (error) {
+            alert("Error uploading file: " + error);
+            document.getElementById("startBtn").disabled = false;
+            document.getElementById("cancelBtn").classList.add("hidden");
+          }
         });
 
-        // File selection
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            const fileName = e.target.files[0]?.name || '';
-            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+      // Cancel button
+      document
+        .getElementById("cancelBtn")
+        .addEventListener("click", async () => {
+          if (currentTaskId) {
+            await fetch(`/cancel/${currentTaskId}`, { method: "POST" });
+            stopStatusPolling();
+            updateProgress(0, "Cancelled");
+            document.getElementById("startBtn").disabled = false;
+            document.getElementById("cancelBtn").classList.add("hidden");
+          }
         });
 
-        // Start button
-        document.getElementById('startBtn').addEventListener('click', async () => {
-            const fileInput = document.getElementById('fileInput');
-            if (!fileInput.files[0]) {
-                alert('Please select a file first!');
-                return;
+      // Clear button
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        // Clear transcript and summaries
+        document.getElementById("transcriptBox").textContent =
+          "Your transcription will appear here...";
+        document.getElementById("abstractiveBox").textContent =
+          "AI-generated summary will appear here...";
+        document.getElementById("extractiveBox").textContent = "";
+
+        // Clear Key Insights
+        document.getElementById("topicListKey").innerHTML = "";
+        document.getElementById("statWords").textContent = "-";
+        document.getElementById("statSentences").textContent = "-";
+        document.getElementById("statAvgLength").textContent = "-";
+        document.getElementById("statUnique").textContent = "-";
+
+        // Clear Q&A
+        document.getElementById("qaQuestion").value = "";
+        document.getElementById("structuredAnswer").style.display = "none";
+        document.getElementById("unstructuredAnswer").style.display = "none";
+        document.getElementById("qaComparison").style.display = "none";
+
+        // Clear Analysis
+        document.getElementById("analysisResults").style.display = "none";
+        document.getElementById("runAnalysisBtn").disabled = false;
+        document.getElementById("runAnalysisBtn").innerHTML =
+          '<i class="material-icons">play_arrow</i> Run Comparative Analysis'; // Reset progress
+        updateProgress(0, "Ready to start processing");
+
+        // Reset task
+        currentTaskId = null;
+      });
+
+      // Q&A button
+      document.getElementById("qaBtn").addEventListener("click", async () => {
+        const question = document.getElementById("qaQuestion").value.trim();
+        const method = document.querySelector(
+          'input[name="qaMethod"]:checked'
+        ).value;
+
+        if (!question) {
+          alert("Please enter a question!");
+          return;
+        }
+
+        if (!currentTaskId) {
+          alert("Please process a file first!");
+          return;
+        }
+
+        try {
+          // Show loading state
+          document.getElementById("structuredAnswer").style.display = "none";
+          document.getElementById("unstructuredAnswer").style.display = "none";
+          document.getElementById("qaComparison").style.display = "none";
+
+          const response = await fetch("/qa", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question, task_id: currentTaskId, method }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Display structured answer
+            if (
+              data.structured &&
+              (method === "both" || method === "structured")
+            ) {
+              document.getElementById("structuredAnswer").style.display =
+                "block";
+              document.getElementById("structuredAnswerText").textContent =
+                data.structured.answer || "No answer found";
+
+              const structuredConf = (data.structured.confidence * 100).toFixed(
+                1
+              );
+              document.getElementById("structuredConfidence").style.width =
+                structuredConf + "%";
+              document.getElementById("structuredConfidenceValue").textContent =
+                structuredConf + "%";
             }
 
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('model', document.querySelector('input[name="model"]:checked').value);
-            formData.append('chunk_size', document.querySelector('input[name="chunk"]:checked').value);
+            // Display unstructured answer
+            if (
+              data.unstructured &&
+              (method === "both" || method === "unstructured")
+            ) {
+              document.getElementById("unstructuredAnswer").style.display =
+                "block";
+              document.getElementById("unstructuredAnswerText").textContent =
+                data.unstructured.answer || "No answer found";
 
-            try {
-                document.getElementById('startBtn').disabled = true;
-                document.getElementById('cancelBtn').classList.remove('hidden');
-                
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (response.ok) {
-                    currentTaskId = data.task_id;
-                    startStatusPolling();
-                } else {
-                    alert('Error: ' + data.error);
-                    document.getElementById('startBtn').disabled = false;
-                    document.getElementById('cancelBtn').classList.add('hidden');
-                }
-            } catch (error) {
-                alert('Error uploading file: ' + error);
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('cancelBtn').classList.add('hidden');
-            }
-        });
-
-        // Cancel button
-        document.getElementById('cancelBtn').addEventListener('click', async () => {
-            if (currentTaskId) {
-                await fetch(`/cancel/${currentTaskId}`, { method: 'POST' });
-                stopStatusPolling();
-                updateProgress(0, 'Cancelled');
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('cancelBtn').classList.add('hidden');
-            }
-        });
-
-        // Clear button
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            // Clear transcript and summaries
-            document.getElementById('transcriptBox').textContent = 'Your transcription will appear here...';
-            document.getElementById('abstractiveBox').textContent = 'AI-generated summary will appear here...';
-            document.getElementById('extractiveBox').textContent = '';
-            
-            // Clear Key Insights
-            document.getElementById('entityListKey').innerHTML = '';
-            document.getElementById('topicListKey').innerHTML = '';
-            document.getElementById('statWords').textContent = '-';
-            document.getElementById('statSentences').textContent = '-';
-            document.getElementById('statAvgLength').textContent = '-';
-            document.getElementById('statUnique').textContent = '-';
-            
-            // Clear Q&A
-            document.getElementById('qaQuestion').value = '';
-            document.getElementById('structuredAnswer').style.display = 'none';
-            document.getElementById('unstructuredAnswer').style.display = 'none';
-            document.getElementById('qaComparison').style.display = 'none';
-            
-            // Clear Analysis
-            document.getElementById('analysisResults').style.display = 'none';
-            document.getElementById('runAnalysisBtn').disabled = false;
-            document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
-            
-            // Reset progress
-            updateProgress(0, 'Ready to start processing');
-            
-            // Reset task
-            currentTaskId = null;
-        });
-
-        // Q&A button
-        document.getElementById('qaBtn').addEventListener('click', async () => {
-            const question = document.getElementById('qaQuestion').value.trim();
-            const method = document.querySelector('input[name="qaMethod"]:checked').value;
-            
-            if (!question) {
-                alert('Please enter a question!');
-                return;
-            }
-            
-            if (!currentTaskId) {
-                alert('Please process a file first!');
-                return;
+              const unstructuredConf = (
+                data.unstructured.confidence * 100
+              ).toFixed(1);
+              document.getElementById("unstructuredConfidence").style.width =
+                unstructuredConf + "%";
+              document.getElementById(
+                "unstructuredConfidenceValue"
+              ).textContent = unstructuredConf + "%";
             }
 
-            try {
-                // Show loading state
-                document.getElementById('structuredAnswer').style.display = 'none';
-                document.getElementById('unstructuredAnswer').style.display = 'none';
-                document.getElementById('qaComparison').style.display = 'none';
-                
-                const response = await fetch('/qa', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, task_id: currentTaskId, method })
-                });
+            // Display comparison
+            if (data.comparison && method === "both") {
+              document.getElementById("qaComparison").style.display = "block";
+              const recommended = data.comparison.recommended_method;
+              const structConf = (
+                data.comparison.structured_confidence * 100
+              ).toFixed(1);
+              const unstructConf = (
+                data.comparison.unstructured_confidence * 100
+              ).toFixed(1);
 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    // Display structured answer
-                    if (data.structured && (method === 'both' || method === 'structured')) {
-                        document.getElementById('structuredAnswer').style.display = 'block';
-                        document.getElementById('structuredAnswerText').textContent = data.structured.answer || 'No answer found';
-                        
-                        const structuredConf = (data.structured.confidence * 100).toFixed(1);
-                        document.getElementById('structuredConfidence').style.width = structuredConf + '%';
-                        document.getElementById('structuredConfidenceValue').textContent = structuredConf + '%';
-                    }
-                    
-                    // Display unstructured answer
-                    if (data.unstructured && (method === 'both' || method === 'unstructured')) {
-                        document.getElementById('unstructuredAnswer').style.display = 'block';
-                        document.getElementById('unstructuredAnswerText').textContent = data.unstructured.answer || 'No answer found';
-                        
-                        const unstructuredConf = (data.unstructured.confidence * 100).toFixed(1);
-                        document.getElementById('unstructuredConfidence').style.width = unstructuredConf + '%';
-                        document.getElementById('unstructuredConfidenceValue').textContent = unstructuredConf + '%';
-                    }
-                    
-                    // Display comparison
-                    if (data.comparison && method === 'both') {
-                        document.getElementById('qaComparison').style.display = 'block';
-                        const recommended = data.comparison.recommended_method;
-                        const structConf = (data.comparison.structured_confidence * 100).toFixed(1);
-                        const unstructConf = (data.comparison.unstructured_confidence * 100).toFixed(1);
-                        
-                        document.getElementById('comparisonText').innerHTML = `
-                            <strong>Recommended Method:</strong> ${recommended === 'structured' ? '🔑 Structured (Keyword-based)' : '🤖 Unstructured (AI Transformer)'}<br>
-                            <strong>Reason:</strong> Higher confidence score (${recommended === 'structured' ? structConf : unstructConf}% vs ${recommended === 'structured' ? unstructConf : structConf}%)<br><br>
+              document.getElementById("comparisonText").innerHTML = `
+                            <strong>Recommended Method:</strong> ${
+                              recommended === "structured"
+                                ? "🔑 Structured (Keyword-based)"
+                                : "🤖 Unstructured (AI Transformer)"
+                            }<br>
+                            <strong>Reason:</strong> Higher confidence score (${
+                              recommended === "structured"
+                                ? structConf
+                                : unstructConf
+                            }% vs ${
+                recommended === "structured" ? unstructConf : structConf
+              }%)<br><br>
                             <em>The ${recommended} approach provided a more confident answer for this question.</em>
                         `;
-                    }
-                } else {
-                    alert('Error: ' + (data.error || 'Unknown error'));
-                }
-            } catch (error) {
-                alert('Error asking question: ' + error);
             }
+          } else {
+            alert("Error: " + (data.error || "Unknown error"));
+          }
+        } catch (error) {
+          alert("Error asking question: " + error);
+        }
+      });
+
+      // Run Analysis button
+      document
+        .getElementById("runAnalysisBtn")
+        .addEventListener("click", async () => {
+          if (!currentTaskId) {
+            alert("Please process a file first!");
+            return;
+          }
+
+          try {
+            document.getElementById("runAnalysisBtn").disabled = true;
+            document.getElementById("runAnalysisBtn").innerHTML =
+              '<span class="spinner"></span> Running Analysis...';
+
+            const response = await fetch(`/analysis/${currentTaskId}`);
+            const data = await response.json();
+
+            if (response.ok) {
+              document.getElementById("analysisResults").style.display =
+                "block";
+
+              // Structured metrics
+              document.getElementById("structuredTime").textContent =
+                data.structured.processing_time + "s";
+              document.getElementById("structuredMemory").textContent =
+                data.structured.memory_used + " MB";
+              document.getElementById("structuredWords").textContent =
+                data.structured.word_count;
+              document.getElementById("structuredReadability").textContent = (
+                data.structured.quality_metrics?.readability_score || 0
+              ).toFixed(1);
+
+              // Unstructured metrics
+              document.getElementById("unstructuredTime").textContent =
+                data.unstructured.processing_time + "s";
+              document.getElementById("unstructuredMemory").textContent =
+                data.unstructured.memory_used + " MB";
+              document.getElementById("unstructuredWords").textContent =
+                data.unstructured.word_count;
+              document.getElementById("unstructuredReadability").textContent = (
+                data.unstructured.quality_metrics?.readability_score || 0
+              ).toFixed(1);
+
+              // Comparison metrics
+              document.getElementById("fasterMethod").textContent =
+                data.comparison.faster_method === "structured"
+                  ? "🔑 Structured"
+                  : "🤖 Unstructured";
+              document.getElementById("speedRatio").textContent =
+                data.comparison.speed_ratio + "x";
+              document.getElementById("memoryEfficient").textContent =
+                data.comparison.more_efficient_memory === "structured"
+                  ? "🔑 Structured"
+                  : "🤖 Unstructured";
+              document.getElementById("compressionStructured").textContent =
+                data.transcript_stats.compression_ratio_structured + "%";
+              document.getElementById("compressionAbstractive").textContent =
+                data.transcript_stats.compression_ratio_abstractive + "%";
+
+              // Summaries
+              document.getElementById("analysisStructuredSummary").textContent =
+                data.structured.summary || "Not available";
+              document.getElementById(
+                "analysisUnstructuredSummary"
+              ).textContent = data.unstructured.summary || "Not available";
+
+              document.getElementById("runAnalysisBtn").innerHTML =
+                '<i class="material-icons">check_circle</i> Analysis Complete';
+            } else {
+              alert("Error: " + (data.error || "Analysis failed"));
+              document.getElementById("runAnalysisBtn").disabled = false;
+              document.getElementById("runAnalysisBtn").innerHTML =
+                "▶️ Run Comparative Analysis";
+            }
+          } catch (error) {
+            alert("Error running analysis: " + error);
+            document.getElementById("runAnalysisBtn").disabled = false;
+            document.getElementById("runAnalysisBtn").innerHTML =
+              "▶️ Run Comparative Analysis";
+          }
         });
 
-        // Run Analysis button
-        document.getElementById('runAnalysisBtn').addEventListener('click', async () => {
-            if (!currentTaskId) {
-                alert('Please process a file first!');
-                return;
+      function startStatusPolling() {
+        statusInterval = setInterval(async () => {
+          if (!currentTaskId) return;
+
+          try {
+            const response = await fetch(`/status/${currentTaskId}`);
+            const data = await response.json();
+
+            updateProgress(data.progress, data.step);
+
+            if (data.transcript) {
+              document.getElementById("transcriptBox").textContent =
+                data.transcript;
             }
 
-            try {
-                document.getElementById('runAnalysisBtn').disabled = true;
-                document.getElementById('runAnalysisBtn').innerHTML = '<span class="spinner"></span> Running Analysis...';
-                
-                const response = await fetch(`/analysis/${currentTaskId}`);
-                const data = await response.json();
-
-                if (response.ok) {
-                    document.getElementById('analysisResults').style.display = 'block';
-                    
-                    // Structured metrics
-                    document.getElementById('structuredTime').textContent = data.structured.processing_time + 's';
-                    document.getElementById('structuredMemory').textContent = data.structured.memory_used + ' MB';
-                    document.getElementById('structuredWords').textContent = data.structured.word_count;
-                    document.getElementById('structuredReadability').textContent = 
-                        (data.structured.quality_metrics?.readability_score || 0).toFixed(1);
-                    
-                    // Unstructured metrics
-                    document.getElementById('unstructuredTime').textContent = data.unstructured.processing_time + 's';
-                    document.getElementById('unstructuredMemory').textContent = data.unstructured.memory_used + ' MB';
-                    document.getElementById('unstructuredWords').textContent = data.unstructured.word_count;
-                    document.getElementById('unstructuredReadability').textContent = 
-                        (data.unstructured.quality_metrics?.readability_score || 0).toFixed(1);
-                    
-                    // Comparison metrics
-                    document.getElementById('fasterMethod').textContent = 
-                        data.comparison.faster_method === 'structured' ? '🔑 Structured' : '🤖 Unstructured';
-                    document.getElementById('speedRatio').textContent = data.comparison.speed_ratio + 'x';
-                    document.getElementById('memoryEfficient').textContent = 
-                        data.comparison.more_efficient_memory === 'structured' ? '🔑 Structured' : '🤖 Unstructured';
-                    document.getElementById('compressionStructured').textContent = 
-                        data.transcript_stats.compression_ratio_structured + '%';
-                    document.getElementById('compressionAbstractive').textContent = 
-                        data.transcript_stats.compression_ratio_abstractive + '%';
-                    
-                    // Summaries
-                    document.getElementById('analysisStructuredSummary').textContent = 
-                        data.structured.summary || 'Not available';
-                    document.getElementById('analysisUnstructuredSummary').textContent = 
-                        data.unstructured.summary || 'Not available';
-                    
-                    document.getElementById('runAnalysisBtn').innerHTML = '✅ Analysis Complete';
-                } else {
-                    alert('Error: ' + (data.error || 'Analysis failed'));
-                    document.getElementById('runAnalysisBtn').disabled = false;
-                    document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
-                }
-            } catch (error) {
-                alert('Error running analysis: ' + error);
-                document.getElementById('runAnalysisBtn').disabled = false;
-                document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
+            if (data.abstractive_summary) {
+              document.getElementById("abstractiveBox").textContent =
+                data.abstractive_summary;
             }
+
+            if (data.extractive_summary) {
+              document.getElementById("extractiveBox").textContent =
+                data.extractive_summary;
+            }
+
+            if (data.topics && data.topics.length > 0) {
+              const topicHTML = data.topics
+                .map((topic, i) => {
+                  const topicText =
+                    typeof topic === "string" ? topic : topic[1];
+                  return `<span class="topic-tag">Topic ${
+                    i + 1
+                  }: ${topicText}</span>`;
+                })
+                .join("");
+              document.getElementById("topicListKey").innerHTML = topicHTML;
+            }
+
+            // Fetch key insights when processing is complete
+            if (data.status === "completed" && data.progress === 100) {
+              fetchKeyInsights();
+            }
+
+            if (
+              data.status === "completed" ||
+              data.status === "error" ||
+              data.status === "cancelled"
+            ) {
+              stopStatusPolling();
+              document.getElementById("startBtn").disabled = false;
+              document.getElementById("cancelBtn").classList.add("hidden");
+              document.getElementById("startBtn").innerHTML =
+                '<i class="material-icons">play_arrow</i> Start Processing';
+
+              if (data.error) {
+                alert("Error: " + data.error);
+              }
+            }
+          } catch (error) {
+            console.error("Status polling error:", error);
+          }
+        }, 1000); // Poll every second
+      }
+
+      async function fetchKeyInsights() {
+        if (!currentTaskId) return;
+
+        try {
+          const response = await fetch(`/key-insights/${currentTaskId}`);
+          const data = await response.json();
+
+          if (response.ok) {
+            // Update extractive summary
+            if (data.extractive_summary) {
+              document.getElementById("extractiveBox").textContent =
+                data.extractive_summary;
+            }
+
+            // Update topics
+            if (data.topics && data.topics.length > 0) {
+              const topicHTML = data.topics
+                .map((topic, i) => {
+                  const topicText =
+                    typeof topic === "string" ? topic : topic[1];
+                  return `<span class="topic-tag">Topic ${
+                    i + 1
+                  }: ${topicText}</span>`;
+                })
+                .join("");
+              document.getElementById("topicListKey").innerHTML = topicHTML;
+            }
+
+            // Update statistics
+            if (data.statistics) {
+              document.getElementById("statWords").textContent =
+                data.statistics.total_words || "-";
+              document.getElementById("statSentences").textContent =
+                data.statistics.total_sentences || "-";
+              document.getElementById("statAvgLength").textContent =
+                data.statistics.avg_sentence_length || "-";
+              document.getElementById("statUnique").textContent =
+                data.statistics.unique_words || "-";
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching key insights:", error);
+        }
+      }
+
+      function stopStatusPolling() {
+        if (statusInterval) {
+          clearInterval(statusInterval);
+          statusInterval = null;
+        }
+      }
+
+      function updateProgress(percent, text) {
+        const fillEl = document.getElementById("progressFill");
+        const percentEl = document.getElementById("progressPercent");
+        const textEl = document.getElementById("progressText");
+
+        fillEl.style.width = percent + "%";
+        percentEl.textContent = percent + "%";
+        textEl.textContent = text;
+
+        // Add status indicator
+        let statusClass = "status-processing";
+        let statusIcon = "⏳";
+
+        if (percent === 100) {
+          statusClass = "status-complete";
+          statusIcon = "✅";
+        } else if (percent === 0 && text.includes("Error")) {
+          statusClass = "status-error";
+          statusIcon = "❌";
+        }
+
+        textEl.className = `progress-text ${statusClass}`;
+
+        // Animate progress text
+        textEl.classList.add("fade-in");
+        setTimeout(() => textEl.classList.remove("fade-in"), 500);
+      }
+
+      // Add smooth animations when content updates
+      function updateOutput(elementId, content) {
+        const el = document.getElementById(elementId);
+        el.style.opacity = "0.5";
+        setTimeout(() => {
+          el.textContent = content;
+          el.style.opacity = "1";
+        }, 150);
+      }
+
+      // Show notification
+      function showNotification(message, type = "info") {
+        // You can implement a toast notification here
+        console.log(`[${type.toUpperCase()}] ${message}`);
+      }
+
+      // Initialize tooltips
+      document.querySelectorAll(".tooltip").forEach((el) => {
+        el.setAttribute("data-tooltip", el.getAttribute("title") || "");
+      });
+
+      // Add loading animation to start button
+      document
+        .getElementById("startBtn")
+        .addEventListener("click", function () {
+          if (!this.disabled) {
+            this.innerHTML = '<span class="spinner"></span> Processing...';
+          }
         });
 
-        function startStatusPolling() {
-            statusInterval = setInterval(async () => {
-                if (!currentTaskId) return;
-
-                try {
-                    const response = await fetch(`/status/${currentTaskId}`);
-                    const data = await response.json();
-
-                    updateProgress(data.progress, data.step);
-                    
-                    if (data.transcript) {
-                        document.getElementById('transcriptBox').textContent = data.transcript;
-                    }
-                    
-                    if (data.abstractive_summary) {
-                        document.getElementById('abstractiveBox').textContent = data.abstractive_summary;
-                    }
-                    
-                    if (data.extractive_summary) {
-                        document.getElementById('extractiveBox').textContent = data.extractive_summary;
-                    }
-                    
-                    if (data.entities && data.entities.length > 0) {
-                        const entityHTML = data.entities
-                            .map(([entity, label]) => `<span class="entity-tag">${entity} <small>(${label})</small></span>`)
-                            .join('');
-                        document.getElementById('entityListKey').innerHTML = entityHTML;
-                    }
-                    
-                    if (data.topics && data.topics.length > 0) {
-                        const topicHTML = data.topics
-                            .map((topic, i) => {
-                                const topicText = typeof topic === 'string' ? topic : topic[1];
-                                return `<span class="topic-tag">Topic ${i+1}: ${topicText}</span>`;
-                            })
-                            .join('');
-                        document.getElementById('topicListKey').innerHTML = topicHTML;
-                    }
-
-                    // Fetch key insights when processing is complete
-                    if (data.status === 'completed' && data.progress === 100) {
-                        fetchKeyInsights();
-                    }
-
-                    if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
-                        stopStatusPolling();
-                        document.getElementById('startBtn').disabled = false;
-                        document.getElementById('cancelBtn').classList.add('hidden');
-                        document.getElementById('startBtn').innerHTML = '🚀 Start Processing';
-                        
-                        if (data.error) {
-                            alert('Error: ' + data.error);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Status polling error:', error);
-                }
-            }, 1000); // Poll every second
-        }
-
-        async function fetchKeyInsights() {
-            if (!currentTaskId) return;
-
-            try {
-                const response = await fetch(`/key-insights/${currentTaskId}`);
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Update extractive summary
-                    if (data.extractive_summary) {
-                        document.getElementById('extractiveBox').textContent = data.extractive_summary;
-                    }
-
-                    // Update entities
-                    if (data.entities && data.entities.length > 0) {
-                        const entityHTML = data.entities
-                            .map(([entity, label]) => `<span class="entity-tag">${entity} <small>(${label})</small></span>`)
-                            .join('');
-                        document.getElementById('entityListKey').innerHTML = entityHTML;
-                    }
-
-                    // Update topics
-                    if (data.topics && data.topics.length > 0) {
-                        const topicHTML = data.topics
-                            .map((topic, i) => {
-                                const topicText = typeof topic === 'string' ? topic : topic[1];
-                                return `<span class="topic-tag">Topic ${i+1}: ${topicText}</span>`;
-                            })
-                            .join('');
-                        document.getElementById('topicListKey').innerHTML = topicHTML;
-                    }
-
-                    // Update statistics
-                    if (data.statistics) {
-                        document.getElementById('statWords').textContent = data.statistics.total_words || '-';
-                        document.getElementById('statSentences').textContent = data.statistics.total_sentences || '-';
-                        document.getElementById('statAvgLength').textContent = data.statistics.avg_sentence_length || '-';
-                        document.getElementById('statUnique').textContent = data.statistics.unique_words || '-';
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching key insights:', error);
-            }
-        }
-
-        function stopStatusPolling() {
-            if (statusInterval) {
-                clearInterval(statusInterval);
-                statusInterval = null;
-            }
-        }
-
-        function updateProgress(percent, text) {
-            const fillEl = document.getElementById('progressFill');
-            const percentEl = document.getElementById('progressPercent');
-            const textEl = document.getElementById('progressText');
-            
-            fillEl.style.width = percent + '%';
-            percentEl.textContent = percent + '%';
-            textEl.textContent = text;
-            
-            // Add status indicator
-            let statusClass = 'status-processing';
-            let statusIcon = '⏳';
-            
-            if (percent === 100) {
-                statusClass = 'status-complete';
-                statusIcon = '✅';
-            } else if (percent === 0 && text.includes('Error')) {
-                statusClass = 'status-error';
-                statusIcon = '❌';
-            }
-            
-            textEl.className = `progress-text ${statusClass}`;
-            
-            // Animate progress text
-            textEl.classList.add('fade-in');
-            setTimeout(() => textEl.classList.remove('fade-in'), 500);
-        }
-
-        // Add smooth animations when content updates
-        function updateOutput(elementId, content) {
-            const el = document.getElementById(elementId);
-            el.style.opacity = '0.5';
-            setTimeout(() => {
-                el.textContent = content;
-                el.style.opacity = '1';
-            }, 150);
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            // You can implement a toast notification here
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
-
-        // Initialize tooltips
-        document.querySelectorAll('.tooltip').forEach(el => {
-            el.setAttribute('data-tooltip', el.getAttribute('title') || '');
-        });
-
-        // Add loading animation to start button
-        document.getElementById('startBtn').addEventListener('click', function() {
-            if (!this.disabled) {
-                this.innerHTML = '<span class="spinner"></span> Processing...';
-            }
-        });
-
-        // Enhanced file selection feedback
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const fileName = file.name;
-                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-                document.getElementById('fileName').innerHTML = `
+      // Enhanced file selection feedback
+      document.getElementById("fileInput").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const fileName = file.name;
+          const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+          document.getElementById("fileName").innerHTML = `
                     <strong>📄 ${fileName}</strong><br>
                     <small style="color: var(--text-light);">Size: ${fileSize} MB</small>
                 `;
-                document.getElementById('fileName').classList.add('fade-in');
-            }
-        });
+          document.getElementById("fileName").classList.add("fade-in");
+        }
+      });
 
-        console.log('%c🎙️ AI Audio Transcription Platform ', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; font-size: 16px; font-weight: bold;');
-        console.log('%cPowered by OpenAI Whisper & BART', 'color: #667eea; font-size: 12px;');
+      console.log(
+        "%c🎙️ AI Audio Transcription Platform ",
+        "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; font-size: 16px; font-weight: bold;"
+      );
+      console.log(
+        "%cPowered by OpenAI Whisper & Transformer Models",
+        "color: #667eea; font-size: 12px;"
+      );
     </script>
-</body>
+  </body>
 </html>
