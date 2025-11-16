@@ -766,6 +766,255 @@
             border-radius: 6px;
             border: 2px solid #f1f5f9;
         }
+
+        /* Additional styles for new features */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .qa-method-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .method-option input[type="radio"] {
+            accent-color: var(--primary-color);
+        }
+
+        .qa-result-card {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .qa-result-card h4 {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+
+        .answer-text {
+            padding: 15px;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 10px;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .confidence-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .confidence-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-light);
+            min-width: 90px;
+        }
+
+        .confidence-meter {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            transition: width 0.5s ease;
+        }
+
+        .confidence-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            min-width: 45px;
+        }
+
+        .qa-comparison {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .qa-comparison h4 {
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .comparison-text {
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .analysis-card {
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analysis-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: var(--text-dark);
+        }
+
+        .method-desc {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 6px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .comparison-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .comparison-item {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comparison-label {
+            font-size: 0.9em;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .comparison-value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+
+        .summary-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .summary-col h5 {
+            margin-bottom: 12px;
+            color: var(--text-dark);
+            font-size: 1em;
+        }
+
+        .summary-text {
+            padding: 15px;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 10px;
+            min-height: 150px;
+            line-height: 1.7;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .summary-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -873,26 +1122,190 @@
                 </div>
 
                 <div class="tab-content" id="extractive">
-                    <div class="output-box" id="extractiveBox" data-placeholder="Key insights will appear here...">Key insights will appear here...</div>
+                    <div class="section-card">
+                        <h3>📊 Extractive Summary (TextRank)</h3>
+                        <div class="output-box" id="extractiveBox" data-placeholder="Key sentences extracted using TextRank algorithm will appear here...">Extractive summary will appear here...</div>
+                    </div>
+                    
+                    <div class="section-card">
+                        <h3>🏷️ Named Entities</h3>
+                        <div class="entity-list" id="entityListKey"></div>
+                    </div>
+                    
+                    <div class="section-card">
+                        <h3>📈 Topics Identified (LDA)</h3>
+                        <div class="topic-list" id="topicListKey"></div>
+                    </div>
+                    
+                    <div class="section-card">
+                        <h3>📊 Statistics</h3>
+                        <div class="stats-grid" id="statsGrid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="statWords">-</div>
+                                <div class="stat-label">Total Words</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statSentences">-</div>
+                                <div class="stat-label">Sentences</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statAvgLength">-</div>
+                                <div class="stat-label">Avg Length</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="statUnique">-</div>
+                                <div class="stat-label">Unique Words</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-content" id="qa">
-                    <div class="qa-section">
-                        <h3>Ask a Question</h3>
+                    <div class="section-card">
+                        <h3>💬 Ask Questions About Your Content</h3>
                         <div class="qa-input-group">
-                            <input type="text" class="qa-input" id="qaQuestion" placeholder="Enter your question...">
-                            <button class="btn btn-primary btn-small" id="qaBtn">Ask</button>
+                            <input type="text" class="qa-input" id="qaQuestion" placeholder="Ask a question about the transcript..." onkeypress="if(event.key==='Enter') document.getElementById('qaBtn').click()">
+                            <button class="btn btn-primary btn-small" id="qaBtn">🔍 Ask</button>
+                        </div>
+                        <div class="qa-method-selector">
+                            <label class="method-option">
+                                <input type="radio" name="qaMethod" value="both" checked>
+                                <span>Both Methods</span>
+                            </label>
+                            <label class="method-option">
+                                <input type="radio" name="qaMethod" value="structured">
+                                <span>Structured (Keyword)</span>
+                            </label>
+                            <label class="method-option">
+                                <input type="radio" name="qaMethod" value="unstructured">
+                                <span>Unstructured (AI)</span>
+                            </label>
                         </div>
                     </div>
-                    <div class="output-box" id="qaBox">Q&A results will appear here...</div>
+                    
+                    <div id="qaResults">
+                        <div class="qa-result-card" id="structuredAnswer" style="display:none;">
+                            <h4>🔑 Structured Answer (Keyword-based)</h4>
+                            <div class="answer-text" id="structuredAnswerText"></div>
+                            <div class="confidence-bar">
+                                <span class="confidence-label">Confidence:</span>
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" id="structuredConfidence"></div>
+                                </div>
+                                <span class="confidence-value" id="structuredConfidenceValue">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="qa-result-card" id="unstructuredAnswer" style="display:none;">
+                            <h4>🤖 Unstructured Answer (Transformer-based)</h4>
+                            <div class="answer-text" id="unstructuredAnswerText"></div>
+                            <div class="confidence-bar">
+                                <span class="confidence-label">Confidence:</span>
+                                <div class="confidence-meter">
+                                    <div class="confidence-fill" id="unstructuredConfidence"></div>
+                                </div>
+                                <span class="confidence-value" id="unstructuredConfidenceValue">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="qa-comparison" id="qaComparison" style="display:none;">
+                            <h4>📊 Method Comparison</h4>
+                            <div class="comparison-text" id="comparisonText"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-content" id="analysis">
-                    <h3>Entities Found</h3>
-                    <div class="entity-list" id="entityList"></div>
+                    <div class="section-card">
+                        <h3>🔬 Comparative Analysis: Structured vs Unstructured NLP</h3>
+                        <button class="btn btn-primary" id="runAnalysisBtn">▶️ Run Comparative Analysis</button>
+                    </div>
                     
-                    <h3 style="margin-top: 30px;">Topics</h3>
-                    <div class="topic-list" id="topicList"></div>
+                    <div id="analysisResults" style="display:none;">
+                        <div class="analysis-grid">
+                            <div class="analysis-card">
+                                <h4>🔑 Structured Approach</h4>
+                                <div class="method-desc">Extractive (TextRank + TF-IDF)</div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Processing Time:</span>
+                                    <span class="metric-value" id="structuredTime">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Memory Used:</span>
+                                    <span class="metric-value" id="structuredMemory">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Word Count:</span>
+                                    <span class="metric-value" id="structuredWords">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Readability:</span>
+                                    <span class="metric-value" id="structuredReadability">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="analysis-card">
+                                <h4>🤖 Unstructured Approach</h4>
+                                <div class="method-desc">Abstractive (BART Transformer)</div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Processing Time:</span>
+                                    <span class="metric-value" id="unstructuredTime">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Memory Used:</span>
+                                    <span class="metric-value" id="unstructuredMemory">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Word Count:</span>
+                                    <span class="metric-value" id="unstructuredWords">-</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span class="metric-label">Readability:</span>
+                                    <span class="metric-value" id="unstructuredReadability">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-card">
+                            <h4>⚡ Performance Comparison</h4>
+                            <div class="comparison-metrics">
+                                <div class="comparison-item">
+                                    <span class="comparison-label">Faster Method:</span>
+                                    <span class="comparison-value" id="fasterMethod">-</span>
+                                </div>
+                                <div class="comparison-item">
+                                    <span class="comparison-label">Speed Ratio:</span>
+                                    <span class="comparison-value" id="speedRatio">-</span>
+                                </div>
+                                <div class="comparison-item">
+                                    <span class="comparison-label">More Memory Efficient:</span>
+                                    <span class="comparison-value" id="memoryEfficient">-</span>
+                                </div>
+                                <div class="comparison-item">
+                                    <span class="comparison-label">Compression Ratio (Structured):</span>
+                                    <span class="comparison-value" id="compressionStructured">-</span>
+                                </div>
+                                <div class="comparison-item">
+                                    <span class="comparison-label">Compression Ratio (Abstractive):</span>
+                                    <span class="comparison-value" id="compressionAbstractive">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-card">
+                            <h4>📝 Summary Comparison</h4>
+                            <div class="summary-comparison">
+                                <div class="summary-col">
+                                    <h5>Structured Summary</h5>
+                                    <div class="summary-text" id="analysisStructuredSummary">-</div>
+                                </div>
+                                <div class="summary-col">
+                                    <h5>Unstructured Summary</h5>
+                                    <div class="summary-text" id="analysisUnstructuredSummary">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -970,54 +1383,166 @@
 
         // Clear button
         document.getElementById('clearBtn').addEventListener('click', () => {
-            document.getElementById('transcriptBox').textContent = 'Transcript will appear here...';
-            document.getElementById('abstractiveBox').textContent = 'Abstractive summary will appear here...';
-            document.getElementById('extractiveBox').textContent = 'Extractive summary will appear here...';
-            document.getElementById('qaBox').textContent = 'Q&A results will appear here...';
-            document.getElementById('entityList').innerHTML = '';
-            document.getElementById('topicList').innerHTML = '';
-            updateProgress(0, 'Ready to start');
+            // Clear transcript and summaries
+            document.getElementById('transcriptBox').textContent = 'Your transcription will appear here...';
+            document.getElementById('abstractiveBox').textContent = 'AI-generated summary will appear here...';
+            document.getElementById('extractiveBox').textContent = '';
+            
+            // Clear Key Insights
+            document.getElementById('entityListKey').innerHTML = '';
+            document.getElementById('topicListKey').innerHTML = '';
+            document.getElementById('statWords').textContent = '-';
+            document.getElementById('statSentences').textContent = '-';
+            document.getElementById('statAvgLength').textContent = '-';
+            document.getElementById('statUnique').textContent = '-';
+            
+            // Clear Q&A
+            document.getElementById('qaQuestion').value = '';
+            document.getElementById('structuredAnswer').style.display = 'none';
+            document.getElementById('unstructuredAnswer').style.display = 'none';
+            document.getElementById('qaComparison').style.display = 'none';
+            
+            // Clear Analysis
+            document.getElementById('analysisResults').style.display = 'none';
+            document.getElementById('runAnalysisBtn').disabled = false;
+            document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
+            
+            // Reset progress
+            updateProgress(0, 'Ready to start processing');
+            
+            // Reset task
+            currentTaskId = null;
         });
 
         // Q&A button
         document.getElementById('qaBtn').addEventListener('click', async () => {
-            const question = document.getElementById('qaQuestion').value;
-            if (!question || !currentTaskId) {
-                alert('Please enter a question and ensure processing is complete!');
+            const question = document.getElementById('qaQuestion').value.trim();
+            const method = document.querySelector('input[name="qaMethod"]:checked').value;
+            
+            if (!question) {
+                alert('Please enter a question!');
+                return;
+            }
+            
+            if (!currentTaskId) {
+                alert('Please process a file first!');
                 return;
             }
 
             try {
+                // Show loading state
+                document.getElementById('structuredAnswer').style.display = 'none';
+                document.getElementById('unstructuredAnswer').style.display = 'none';
+                document.getElementById('qaComparison').style.display = 'none';
+                
                 const response = await fetch('/qa', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, task_id: currentTaskId, method: 'both' })
+                    body: JSON.stringify({ question, task_id: currentTaskId, method })
                 });
 
                 const data = await response.json();
+                
                 if (response.ok) {
-                    let resultText = `Question: ${question}\n\n`;
-                    
-                    if (data.structured) {
-                        resultText += `Structured Answer: ${data.structured.answer}\n`;
-                        resultText += `Confidence: ${data.structured.confidence}\n\n`;
+                    // Display structured answer
+                    if (data.structured && (method === 'both' || method === 'structured')) {
+                        document.getElementById('structuredAnswer').style.display = 'block';
+                        document.getElementById('structuredAnswerText').textContent = data.structured.answer || 'No answer found';
+                        
+                        const structuredConf = (data.structured.confidence * 100).toFixed(1);
+                        document.getElementById('structuredConfidence').style.width = structuredConf + '%';
+                        document.getElementById('structuredConfidenceValue').textContent = structuredConf + '%';
                     }
                     
-                    if (data.unstructured) {
-                        resultText += `Unstructured Answer: ${data.unstructured.answer}\n`;
-                        resultText += `Confidence: ${data.unstructured.confidence}\n\n`;
+                    // Display unstructured answer
+                    if (data.unstructured && (method === 'both' || method === 'unstructured')) {
+                        document.getElementById('unstructuredAnswer').style.display = 'block';
+                        document.getElementById('unstructuredAnswerText').textContent = data.unstructured.answer || 'No answer found';
+                        
+                        const unstructuredConf = (data.unstructured.confidence * 100).toFixed(1);
+                        document.getElementById('unstructuredConfidence').style.width = unstructuredConf + '%';
+                        document.getElementById('unstructuredConfidenceValue').textContent = unstructuredConf + '%';
                     }
                     
-                    if (data.comparison) {
-                        resultText += `Recommended: ${data.comparison.recommended_method}\n`;
+                    // Display comparison
+                    if (data.comparison && method === 'both') {
+                        document.getElementById('qaComparison').style.display = 'block';
+                        const recommended = data.comparison.recommended_method;
+                        const structConf = (data.comparison.structured_confidence * 100).toFixed(1);
+                        const unstructConf = (data.comparison.unstructured_confidence * 100).toFixed(1);
+                        
+                        document.getElementById('comparisonText').innerHTML = `
+                            <strong>Recommended Method:</strong> ${recommended === 'structured' ? '🔑 Structured (Keyword-based)' : '🤖 Unstructured (AI Transformer)'}<br>
+                            <strong>Reason:</strong> Higher confidence score (${recommended === 'structured' ? structConf : unstructConf}% vs ${recommended === 'structured' ? unstructConf : structConf}%)<br><br>
+                            <em>The ${recommended} approach provided a more confident answer for this question.</em>
+                        `;
                     }
-                    
-                    document.getElementById('qaBox').textContent = resultText;
                 } else {
-                    document.getElementById('qaBox').textContent = 'Error: ' + data.error;
+                    alert('Error: ' + (data.error || 'Unknown error'));
                 }
             } catch (error) {
-                document.getElementById('qaBox').textContent = 'Error: ' + error;
+                alert('Error asking question: ' + error);
+            }
+        });
+
+        // Run Analysis button
+        document.getElementById('runAnalysisBtn').addEventListener('click', async () => {
+            if (!currentTaskId) {
+                alert('Please process a file first!');
+                return;
+            }
+
+            try {
+                document.getElementById('runAnalysisBtn').disabled = true;
+                document.getElementById('runAnalysisBtn').innerHTML = '<span class="spinner"></span> Running Analysis...';
+                
+                const response = await fetch(`/analysis/${currentTaskId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('analysisResults').style.display = 'block';
+                    
+                    // Structured metrics
+                    document.getElementById('structuredTime').textContent = data.structured.processing_time + 's';
+                    document.getElementById('structuredMemory').textContent = data.structured.memory_used + ' MB';
+                    document.getElementById('structuredWords').textContent = data.structured.word_count;
+                    document.getElementById('structuredReadability').textContent = 
+                        (data.structured.quality_metrics?.readability_score || 0).toFixed(1);
+                    
+                    // Unstructured metrics
+                    document.getElementById('unstructuredTime').textContent = data.unstructured.processing_time + 's';
+                    document.getElementById('unstructuredMemory').textContent = data.unstructured.memory_used + ' MB';
+                    document.getElementById('unstructuredWords').textContent = data.unstructured.word_count;
+                    document.getElementById('unstructuredReadability').textContent = 
+                        (data.unstructured.quality_metrics?.readability_score || 0).toFixed(1);
+                    
+                    // Comparison metrics
+                    document.getElementById('fasterMethod').textContent = 
+                        data.comparison.faster_method === 'structured' ? '🔑 Structured' : '🤖 Unstructured';
+                    document.getElementById('speedRatio').textContent = data.comparison.speed_ratio + 'x';
+                    document.getElementById('memoryEfficient').textContent = 
+                        data.comparison.more_efficient_memory === 'structured' ? '🔑 Structured' : '🤖 Unstructured';
+                    document.getElementById('compressionStructured').textContent = 
+                        data.transcript_stats.compression_ratio_structured + '%';
+                    document.getElementById('compressionAbstractive').textContent = 
+                        data.transcript_stats.compression_ratio_abstractive + '%';
+                    
+                    // Summaries
+                    document.getElementById('analysisStructuredSummary').textContent = 
+                        data.structured.summary || 'Not available';
+                    document.getElementById('analysisUnstructuredSummary').textContent = 
+                        data.unstructured.summary || 'Not available';
+                    
+                    document.getElementById('runAnalysisBtn').innerHTML = '✅ Analysis Complete';
+                } else {
+                    alert('Error: ' + (data.error || 'Analysis failed'));
+                    document.getElementById('runAnalysisBtn').disabled = false;
+                    document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
+                }
+            } catch (error) {
+                alert('Error running analysis: ' + error);
+                document.getElementById('runAnalysisBtn').disabled = false;
+                document.getElementById('runAnalysisBtn').innerHTML = '▶️ Run Comparative Analysis';
             }
         });
 
@@ -1044,21 +1569,32 @@
                     }
                     
                     if (data.entities && data.entities.length > 0) {
-                        document.getElementById('entityList').innerHTML = data.entities
-                            .map(([entity, label]) => `<span class="entity-tag">${entity} (${label})</span>`)
+                        const entityHTML = data.entities
+                            .map(([entity, label]) => `<span class="entity-tag">${entity} <small>(${label})</small></span>`)
                             .join('');
+                        document.getElementById('entityListKey').innerHTML = entityHTML;
                     }
                     
                     if (data.topics && data.topics.length > 0) {
-                        document.getElementById('topicList').innerHTML = data.topics
-                            .map((topic, i) => `<span class="topic-tag">Topic ${i+1}: ${topic[1]}</span>`)
+                        const topicHTML = data.topics
+                            .map((topic, i) => {
+                                const topicText = typeof topic === 'string' ? topic : topic[1];
+                                return `<span class="topic-tag">Topic ${i+1}: ${topicText}</span>`;
+                            })
                             .join('');
+                        document.getElementById('topicListKey').innerHTML = topicHTML;
+                    }
+
+                    // Fetch key insights when processing is complete
+                    if (data.status === 'completed' && data.progress === 100) {
+                        fetchKeyInsights();
                     }
 
                     if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
                         stopStatusPolling();
                         document.getElementById('startBtn').disabled = false;
                         document.getElementById('cancelBtn').classList.add('hidden');
+                        document.getElementById('startBtn').innerHTML = '🚀 Start Processing';
                         
                         if (data.error) {
                             alert('Error: ' + data.error);
@@ -1068,6 +1604,51 @@
                     console.error('Status polling error:', error);
                 }
             }, 1000); // Poll every second
+        }
+
+        async function fetchKeyInsights() {
+            if (!currentTaskId) return;
+
+            try {
+                const response = await fetch(`/key-insights/${currentTaskId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update extractive summary
+                    if (data.extractive_summary) {
+                        document.getElementById('extractiveBox').textContent = data.extractive_summary;
+                    }
+
+                    // Update entities
+                    if (data.entities && data.entities.length > 0) {
+                        const entityHTML = data.entities
+                            .map(([entity, label]) => `<span class="entity-tag">${entity} <small>(${label})</small></span>`)
+                            .join('');
+                        document.getElementById('entityListKey').innerHTML = entityHTML;
+                    }
+
+                    // Update topics
+                    if (data.topics && data.topics.length > 0) {
+                        const topicHTML = data.topics
+                            .map((topic, i) => {
+                                const topicText = typeof topic === 'string' ? topic : topic[1];
+                                return `<span class="topic-tag">Topic ${i+1}: ${topicText}</span>`;
+                            })
+                            .join('');
+                        document.getElementById('topicListKey').innerHTML = topicHTML;
+                    }
+
+                    // Update statistics
+                    if (data.statistics) {
+                        document.getElementById('statWords').textContent = data.statistics.total_words || '-';
+                        document.getElementById('statSentences').textContent = data.statistics.total_sentences || '-';
+                        document.getElementById('statAvgLength').textContent = data.statistics.avg_sentence_length || '-';
+                        document.getElementById('statUnique').textContent = data.statistics.unique_words || '-';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching key insights:', error);
+            }
         }
 
         function stopStatusPolling() {

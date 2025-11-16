@@ -148,6 +148,41 @@ def lda_topic_modeling(text, num_topics=3):
         print(f"[!] LDA error: {e}")
         return [(0, "Topic modeling failed")]
 
+def bag_of_words_analysis(text):
+    """Bag-of-Words (BoW) implementation for feature extraction"""
+    if not STRUCTURED_NLP_AVAILABLE:
+        return {"error": "BoW not available - missing dependencies"}
+    
+    try:
+        # Tokenize and clean text
+        words = re.findall(r'\b[a-zA-Z]{3,}\b', text.lower())
+        
+        # Remove stop words
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 
+                     'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be', 
+                     'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 
+                     'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 
+                     'that', 'these', 'those'}
+        
+        filtered_words = [w for w in words if w not in stop_words]
+        
+        # Count word frequencies
+        word_counts = Counter(filtered_words)
+        
+        # Get top words
+        top_words = word_counts.most_common(15)
+        
+        return {
+            'total_words': len(words),
+            'unique_words': len(set(words)),
+            'vocabulary_size': len(filtered_words),
+            'top_keywords': top_words,
+            'word_frequency': dict(word_counts)
+        }
+    except Exception as e:
+        print(f"[!] BoW error: {e}")
+        return {"error": f"Bag-of-Words analysis failed: {str(e)}"}
+
 def structured_summarization_pipeline(text):
     """Complete structured NLP pipeline"""
     print("[*] Running structured NLP analysis...")
@@ -161,10 +196,14 @@ def structured_summarization_pipeline(text):
     # Topic modeling
     topics = lda_topic_modeling(text)
     
+    # Bag-of-Words analysis
+    bow_analysis = bag_of_words_analysis(text)
+    
     return {
         'extractive_summary': extractive_summary,
         'entities': entities,
-        'topics': topics
+        'topics': topics,
+        'bow_analysis': bow_analysis
     }
 
 def process_video_in_chunks(video_path, chunk_duration=300):  # 5 minutes chunks

@@ -178,12 +178,20 @@ def process_audio_video(task_id, filepath, model_name, chunk_size):
                 task['progress'] = 90
                 task['step'] = 'Creating extractive summary...'
                 try:
+                    print("[*] Running structured summarization pipeline...")
                     structured_analysis = structured_summarization_pipeline(full_transcript)
                     task['extractive_summary'] = structured_analysis.get('extractive_summary', '')
                     task['entities'] = structured_analysis.get('entities', [])[:10]
                     task['topics'] = structured_analysis.get('topics', [])
+                    print(f"[✓] Structured analysis complete: {len(task['extractive_summary'])} chars")
                 except Exception as e:
-                    print(f"Error generating extractive summary: {e}")
+                    print(f"[!] Error generating extractive summary: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    # Set default values on error
+                    task['extractive_summary'] = f"Error generating extractive summary: {str(e)}"
+                    task['entities'] = []
+                    task['topics'] = []
         
         task['progress'] = 100
         task['status'] = 'completed'
@@ -299,6 +307,13 @@ def qa_answer():
     try:
         qa_system = QuestionAnsweringSystem()
         qa_system.set_context(context)
+        
+        # Auto-load the transformer model if using unstructured method
+        if method in ['unstructured', 'both']:
+            if not qa_system.qa_pipeline:
+                print("[*] Loading Q&A transformer model...")
+                qa_system.load_qa_model()
+        
         results = qa_system.answer_question(question, method)
         return jsonify(results), 200
     except Exception as e:
@@ -328,6 +343,53 @@ def compare():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/key-insights/<task_id>', methods=['GET'])
+def key_insights(task_id):
+    """Generate comprehensive key insights from transcript"""
+    if not ADVANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Key insights not available'}), 503
+    
+    if task_id not in processing_tasks:
+        return jsonify({'error': 'Task not found'}), 404
+    
+    context = processing_tasks[task_id]['transcript']
+    if not context:
+        return jsonify({'error': 'No transcript available'}), 400
+    
+    try:
+        print(f"[*] Generating key insights for task {task_id}...")
+        print(f"[*] Context length: {len(context)} characters")
+        
+        # Get structured analysis
+        structured_analysis = structured_summarization_pipeline(context)
+        
+        print(f"[*] Structured analysis result keys: {structured_analysis.keys()}")
+        
+        # Calculate additional statistics
+        words = context.split()
+        sentences = [s.strip() for s in context.split('.') if s.strip()]
+        
+        result = {
+            'extractive_summary': structured_analysis.get('extractive_summary', ''),
+            'entities': structured_analysis.get('entities', [])[:15],
+            'topics': structured_analysis.get('topics', []),
+            'statistics': {
+                'total_words': len(words),
+                'total_sentences': len(sentences),
+                'avg_sentence_length': round(len(words) / len(sentences), 2) if sentences else 0,
+                'unique_words': len(set(words)),
+                'entities_count': len(structured_analysis.get('entities', []))
+            }
+        }
+        
+        print(f"[✓] Key insights generated successfully")
+        return jsonify(result), 200
+    except Exception as e:
+        print(f"[!] Error in key_insights: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
     """Evaluation endpoint"""
@@ -344,6 +406,65 @@ def evaluate():
         evaluator = EvaluationMetrics()
         results = evaluator.comparative_evaluation(context, structured_summarization_pipeline, summarize_text)
         return jsonify(results), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analysis/<task_id>', methods=['GET'])
+def analysis(task_id):
+    """Comprehensive comparative analysis endpoint"""
+    if not ADVANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Analysis not available'}), 503
+    
+    if task_id not in processing_tasks:
+        return jsonify({'error': 'Task not found'}), 404
+    
+    task = processing_tasks[task_id]
+    context = task['transcript']
+    
+    if not context or task['status'] != 'completed':
+        return jsonify({'error': 'Processing not complete'}), 400
+    
+    try:
+        evaluator = EvaluationMetrics()
+        
+        # Perform comparative evaluation
+        results = evaluator.comparative_evaluation(
+            context, 
+            structured_summarization_pipeline, 
+            summarize_text
+        )
+        
+        # Add summary quality comparison
+        structured_summary = task.get('extractive_summary', '')
+        abstractive_summary = task.get('abstractive_summary', '')
+        
+        comparison_data = {
+            'structured': {
+                'method': 'Extractive (TextRank + TF-IDF)',
+                'summary': structured_summary,
+                'word_count': len(structured_summary.split()),
+                'processing_time': results.get('structured', {}).get('processing_time', 0),
+                'memory_used': results.get('structured', {}).get('memory_used', 0),
+                'quality_metrics': results.get('structured', {}).get('quality_metrics', {})
+            },
+            'unstructured': {
+                'method': 'Abstractive (BART Transformer)',
+                'summary': abstractive_summary,
+                'word_count': len(abstractive_summary.split()),
+                'processing_time': results.get('unstructured', {}).get('processing_time', 0),
+                'memory_used': results.get('unstructured', {}).get('memory_used', 0),
+                'quality_metrics': results.get('unstructured', {}).get('quality_metrics', {})
+            },
+            'comparison': results.get('comparison', {}),
+            'transcript_stats': {
+                'total_words': len(context.split()),
+                'total_characters': len(context),
+                'compression_ratio_structured': round(len(structured_summary) / len(context) * 100, 2) if context else 0,
+                'compression_ratio_abstractive': round(len(abstractive_summary) / len(context) * 100, 2) if context else 0
+            }
+        }
+        
+        return jsonify(comparison_data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
